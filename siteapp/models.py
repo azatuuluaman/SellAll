@@ -8,6 +8,9 @@ class Site(models.Model):
     privacy_policy_text = models.TextField('Политика конфиденциальности текст', max_length=5000)
     copyright = models.CharField('Авторские права', max_length=20)
 
+    def __str__(self):
+        return self.name
+
 
 class SocialMedia(models.Model):
     name = models.CharField('Название', max_length=100)
@@ -15,6 +18,9 @@ class SocialMedia(models.Model):
     type = models.CharField('Тип', max_length=100)
     link = models.CharField('Ссылка', max_length=100)
     site = models.ForeignKey(Site, verbose_name='Сайт', on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return self.name
 
 
 class FeedBack(models.Model):
@@ -26,7 +32,13 @@ class FeedBack(models.Model):
     check_date = models.DateTimeField('Дата проверки', null=True, blank=True)
     checked = models.BooleanField('Проверена', default=0)
 
+    def __str__(self):
+        return self.name
+
 
 class Help(models.Model):
     title = models.CharField('Загаловок', max_length=100)
     text = models.TextField('Текст', max_length=5000)
+
+    def __str__(self):
+        return self.title
