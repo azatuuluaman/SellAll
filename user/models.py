@@ -1,4 +1,6 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import Permission
 from django.db import models
 
 
@@ -33,12 +35,13 @@ class UserManager(BaseUserManager):
 
         user.is_active = True
         user.is_admin = True
+        user.is_superuser = True
 
         user.save()
         return user
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
     email = models.EmailField(unique=True, db_index=True)
     first_name = models.CharField('Name', max_length=100)
@@ -50,6 +53,7 @@ class User(AbstractBaseUser):
 
     is_active = models.BooleanField('active', default=False)
     is_admin = models.BooleanField('admin', default=False)
+    is_superuser = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
 
@@ -65,10 +69,10 @@ class User(AbstractBaseUser):
         return self.is_admin
 
     def has_perm(self, perm, obj=None):
-        return True
+        return self.is_admin
 
     def has_module_perms(self, app_label):
-        return True
+        return self.is_admin
 
     def get_short_name(self):
         return self.first_name
@@ -78,7 +82,6 @@ class User(AbstractBaseUser):
 
     def __unicode__(self):
         return self.email
-
 
 # class Profile(models.Model):
 #     GENDER = (
@@ -96,17 +99,17 @@ class User(AbstractBaseUser):
 #         return u'Profile of user: {0}'.format(self.user.email)
 
 
-    # def create_profile(sender, instance, created, **kwargs):
-    #     if created:
-    #         Profile.objects.create(user=instance)
-    # post_save.connect(create_profile, sender=User)
-    #
-    #
-    # def delete_user(sender, instance=None, **kwargs):
-    #     try:
-    #         instance.user
-    #     except User.DoesNotExist:
-    #         pass
-    #     else:
-    #         instance.user.delete()
-    # post_delete.connect(delete_user, sender=Profile)
+# def create_profile(sender, instance, created, **kwargs):
+#     if created:
+#         Profile.objects.create(user=instance)
+# post_save.connect(create_profile, sender=User)
+#
+#
+# def delete_user(sender, instance=None, **kwargs):
+#     try:
+#         instance.user
+#     except User.DoesNotExist:
+#         pass
+#     else:
+#         instance.user.delete()
+# post_delete.connect(delete_user, sender=Profile)
