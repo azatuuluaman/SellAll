@@ -1,13 +1,22 @@
 from rest_framework import viewsets
+from rest_framework.response import Response
 
 from .serializers import AdvertisementSerializer, CitySerializer, CategorySerializer, ChildCategorySerializer, \
     AdsSubscriberSerializer, AdsImageSerializer, NumberSerializer, ViewStatisticSerializer
+
 from .models import Category, ChildCategory, Advertisement, AdsSubscriber, AdsImage, City, Number, ViewStatistic
 
 
 class AdvertisementAPIView(viewsets.ModelViewSet):
     serializer_class = AdvertisementSerializer
     queryset = Advertisement.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_delete = True
+        instance.save()
+        serializer = self.serializer_class(instance)
+        return Response(serializer.data)
 
 
 class CityAPIView(viewsets.ModelViewSet):

@@ -3,6 +3,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import Permission
 from django.db import models
 
+from advertisement.models import Advertisement
 
 class UserManager(BaseUserManager):
     def create_user(self, email, first_name, last_name, phone_number, password=None):
@@ -55,6 +56,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField('admin', default=False)
     is_superuser = models.BooleanField(default=False)
 
+    favourites = models.ManyToManyField(Advertisement, verbose_name='Избранные', related_name='favourites', blank=True)
+
     USERNAME_FIELD = 'email'
 
     REQUIRED_FIELDS = (
@@ -82,34 +85,3 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __unicode__(self):
         return self.email
-
-# class Profile(models.Model):
-#     GENDER = (
-#         ('M', 'Homme'),
-#         ('F', 'Femme'),
-#     )
-#
-#     user = models.OneToOneField(settings.AUTH_USER_MODEL)
-#     first_name = models.CharField(max_length=120, blank=False)
-#     last_name = models.CharField(max_length=120, blank=False)
-#     gender = models.CharField(max_length=1, choices=GENDER)
-#     zip_code = models.CharField(max_length=5, validators=[MinLengthValidator(5)], blank=False)
-#
-#     def __unicode__(self):
-#         return u'Profile of user: {0}'.format(self.user.email)
-
-
-# def create_profile(sender, instance, created, **kwargs):
-#     if created:
-#         Profile.objects.create(user=instance)
-# post_save.connect(create_profile, sender=User)
-#
-#
-# def delete_user(sender, instance=None, **kwargs):
-#     try:
-#         instance.user
-#     except User.DoesNotExist:
-#         pass
-#     else:
-#         instance.user.delete()
-# post_delete.connect(delete_user, sender=Profile)
