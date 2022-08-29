@@ -55,7 +55,6 @@ class Advertisement(models.Model):
     city = models.ForeignKey(City, on_delete=models.DO_NOTHING)
     email = models.EmailField('E-mail')
     whatsapp_number = models.CharField('W/A номер', max_length=20)
-    head_image = models.ImageField('Главное изображение')
 
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
     modified_at = models.DateTimeField('Дата изменения', auto_now=True)
