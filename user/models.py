@@ -1,14 +1,15 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
-from django.contrib.auth.models import Permission
 from django.db import models
+from django.utils.crypto import get_random_string
 
 from advertisement.models import Advertisement
 
+
 class UserManager(BaseUserManager):
-    def create_user(self, email, first_name, last_name, phone_number, password=None):
+    def _create_user(self, email, first_name, last_name, phone_number, password, **extra_fields):
         if not email:
-            raise ValueError('User must have an email address')
+            raise ValueError('Email is required')
 
         if not first_name:
             raise ValueError('User must have an name')
@@ -19,27 +20,28 @@ class UserManager(BaseUserManager):
         if not phone_number:
             raise ValueError('User must have an phone number')
 
-        user = self.model(
-            email=self.normalize_email(email),
-            first_name=first_name,
-            last_name=last_name,
-            phone_number=phone_number,
-        )
+        email = self.normalize_email(email)
+
+        user = self.model(email=email,
+                          first_name=first_name,
+                          last_name=last_name,
+                          phone_number=phone_number,
+                          **extra_fields)
 
         user.set_password(password)
 
-        user.save()
+        user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, first_name, last_name, phone_number, password):
-        user = self.create_user(email, first_name, last_name, phone_number, password=password)
+    def create(self, email, first_name, last_name, phone_number, password, **extra_fields):
+        extra_fields.setdefault('is_superuser', False)
+        return self._create_user(email, first_name, last_name, phone_number, password, **extra_fields)
 
-        user.is_active = True
-        user.is_admin = True
-        user.is_superuser = True
-
-        user.save()
-        return user
+    def create_superuser(self, email, first_name, last_name, phone_number, password, **extra_fields):
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('is_staff', True)
+        return self._create_user(email, first_name, last_name, phone_number, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -52,11 +54,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     created = models.DateTimeField('created', auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
-    is_active = models.BooleanField('active', default=False)
-    is_admin = models.BooleanField('admin', default=False)
+    is_active = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
     favourites = models.ManyToManyField(Advertisement, verbose_name='Избранные', related_name='favourites', blank=True)
+
+    activation_code = models.CharField(max_length=8, blank=True)
 
     USERNAME_FIELD = 'email'
 
@@ -68,20 +72,19 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     ordering = ('created',)
 
-    def is_staff(self):
-        return self.is_admin
+    def has_module_perms(self, app_label):
+        return self.is_staff or self.is_superuser
 
     def has_perm(self, perm, obj=None):
-        return self.is_admin
+        return self.is_superuser
 
-    def has_module_perms(self, app_label):
-        return self.is_admin
+    def create_activation_code(self):
+        code = get_random_string(8)
+        if User.objects.filter(activation_code=code).exists():
+            self.create_activation_code()
+        self.activation_code = code
+        self.save(update_fields=['activation_code'])
 
-    def get_short_name(self):
-        return self.first_name
-
-    def get_full_name(self):
-        return f'{self.last_name} {self.first_name}'
-
-    def __unicode__(self):
-        return self.email
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'

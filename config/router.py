@@ -4,6 +4,7 @@ from rest_framework import routers
 
 from advertisement import views as ads_view
 from siteapp import views as site_view
+from user.views import RegisterUserView, ActivationView, ForgotPasswordView
 
 router = routers.DefaultRouter()
 
@@ -22,5 +23,9 @@ router.register('feedback', site_view.FeedBackAPIView)
 router.register('help', site_view.HelpAPIView)
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('register/', RegisterUserView.as_view(), name='register'),
+    path('activation/<str:code>/', ActivationView.as_view()),
+    path('forgot_password/', ForgotPasswordView.as_view()),
+
 ]
