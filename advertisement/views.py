@@ -4,6 +4,7 @@ from rest_framework import viewsets, generics, status
 
 from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBackend
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from .serializers import (
     AdvertisementSerializer,
@@ -55,40 +56,31 @@ class AdvertisementPriceFilterBackend(BaseFilterBackend):
 
 
 class AdvertisementAPIView(viewsets.ModelViewSet):
-    serializer_class = AdvertisementSerializer
     queryset = Advertisement.objects.all()
+    serializer_class = AdvertisementSerializer
+    permission_classes = (IsAuthenticated,)
 
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter, AdvertisementPriceFilterBackend)
     filterset_fields = ('child_category', 'city', 'is_delete')
     search_fields = ('name',)
     ordering_fields = ('created_at', 'price')
 
+    def get_serializer_class(self, *args, **kwargs):
+        serializer_class = AdvertisementSerializer
+
+        if self.action == 'GET':
+            serializer_class = AdvertisementListSerializer
+
+        return serializer_class
+
     def get_queryset(self):
         user = self.request.user
-        if user.is_anonymous:
-            self.permission_denied(request=self.request, message="Unauthorized", code=status.HTTP_401_UNAUTHORIZED)
-        if user.is_superuser:
-            return self.queryset
+        queryset = self.queryset
 
-        return Advertisement.objects.filter(owner=user)
+        if user.is_authenticated and not user.is_superuser:
+            queryset = Advertisement.objects.filter(owner=user)
 
-    def list(self, request, *args, **kwargs):
-        self.serializer_class = AdvertisementListSerializer
-        queryset = self.filter_queryset(self.get_queryset())
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, *args, **kwargs):
-        self.serializer_class = AdvertisementListSerializer
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return queryset
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -128,9 +120,20 @@ class NumberAPIView(generics.ListAPIView):
     queryset = Number.objects.all()
 
 
-class ViewStatisticAPIView(generics.ListAPIView):
+class ViewStatisticAPIView(generics.GenericAPIView):
     serializer_class = ViewStatisticSerializer
     queryset = ViewStatistic.objects.all()
 
     def get_queryset(self):
-        return ViewStatistic.objects.filter(advertisement=self.kwargs['pk'])
+        return ViewStatistic.objects.filter(advertisement=self.kwargs.get('pk'))
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)

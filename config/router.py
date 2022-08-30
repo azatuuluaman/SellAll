@@ -12,19 +12,29 @@ from advertisement.views import (
     AdsImageAPIView,
     NumberAPIView,
 )
-from siteapp import views as site_view
+from siteapp.views import (
+    SiteAPIView,
+    SocialMediaAPIView,
+    FeedBackAPIView,
+    HelpAPIView
+)
 from user.views import RegisterUserView, ActivationView, ForgotPasswordView
 
 router = routers.DefaultRouter()
 
 router.register('advertisement', AdvertisementAPIView)
 
-router.register('site', site_view.SiteAPIView)
-router.register('social-media', site_view.SocialMediaAPIView, 'social_media')
-router.register('feedback', site_view.FeedBackAPIView)
-router.register('help', site_view.HelpAPIView)
-
 urlpatterns = [
+    path('', include(router.urls)),
+]
+
+urlpatterns_auth = [
+    path('register/', RegisterUserView.as_view(), name='register'),
+    path('activation/<str:code>/', ActivationView.as_view(), name='activate'),
+    path('forgot_password/', ForgotPasswordView.as_view(), name='forgot_password'),
+]
+
+urlpatterns_ads = [
     path('categories/', CategoryAPIView.as_view(), name='categories'),
     path('child-categories/', ChildCategoryAPIView.as_view(), name='child_categories'),
     path('cities/', CityAPIView.as_view(), name='cities'),
@@ -32,8 +42,15 @@ urlpatterns = [
     path('subscribers/', AdsSubscriberAPIView.as_view(), name='subscribers'),
     path('numbers/', NumberAPIView.as_view(), name='numbers'),
     path('images/', AdsImageAPIView.as_view(), name='images'),
-    path('register/', RegisterUserView.as_view(), name='register'),
-    path('activation/<str:code>/', ActivationView.as_view(), name='activate'),
-    path('forgot_password/', ForgotPasswordView.as_view(), name='forgot_password'),
-    path('', include(router.urls)),
 ]
+
+urlpatterns_siteapp = [
+    path('site', SiteAPIView.as_view(), name='site'),
+    path('social-media', SocialMediaAPIView.as_view(), name='social_media'),
+    path('feedback', FeedBackAPIView.as_view(), name='feedback'),
+    path('help', HelpAPIView.as_view(), name='help'),
+]
+
+urlpatterns += urlpatterns_auth
+urlpatterns += urlpatterns_ads
+urlpatterns += urlpatterns_siteapp
