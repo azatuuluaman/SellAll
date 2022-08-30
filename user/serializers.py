@@ -38,7 +38,3 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user.create_activation_code()
         send_activation_mail(user.email, user.activation_code, self.context['request'])
         return user
-
-
-class ForgotPasswordSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)

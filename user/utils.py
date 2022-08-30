@@ -18,18 +18,6 @@ def send_activation_mail(email, activation_code, request):
     Util.send_email(message)
 
 
-def send_password_with_email(user: str) -> None:
-    new_password = get_random_string(8)
-    user.set_password(new_password)
-    user.save()
-    message = {
-        'email_subject': 'your new password',
-        'email_body': f'Hi {user.first_name}\n your new password {new_password}',
-        'to_whom': user.email,
-    }
-    Util.send_email(message)
-
-
 class Util:
     @staticmethod
     def send_email(message):

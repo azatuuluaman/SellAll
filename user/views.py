@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 
 from .models import User
 from .serializers import UserRegisterSerializer, ForgotPasswordSerializer, ActivationSerializer
-from .utils import send_password_with_email
 
 User = get_user_model()
 
@@ -33,20 +32,3 @@ class ActivationView(APIView):
         user.save()
         return Response({"GOTOVO": "DETKA"})
 
-
-class ForgotPasswordView(generics.UpdateAPIView):
-    """
-    an endpoint forgot password
-    """
-    serializer_class = ForgotPasswordSerializer
-
-    def put(self, request, *args, **kwargs):
-        data = request.data
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-
-        email = serializer.data['email']
-        user = User.objects.get(email=email)
-        send_password_with_email(user)
-
-        return Response({'forgot_password': 'successfully'}, status=status.HTTP_200_OK)
