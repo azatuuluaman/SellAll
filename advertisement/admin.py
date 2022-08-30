@@ -1,7 +1,16 @@
 from django.contrib import admin
 
-from .models import Category, ChildCategory, Advertisement, AdsSubscriber, AdsImage, \
-    City, Number, ViewStatistic, Subscription
+from .models import (
+    Category,
+    ChildCategory,
+    Advertisement,
+    AdsSubscriber,
+    AdsImage,
+    City,
+    Number,
+    ViewStatistic,
+    Subscription
+)
 
 
 @admin.register(Advertisement)

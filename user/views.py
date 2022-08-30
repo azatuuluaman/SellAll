@@ -2,6 +2,7 @@ from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
+
 from .models import User
 from .serializers import UserRegisterSerializer, ForgotPasswordSerializer, ActivationSerializer
 from .utils import send_password_with_email

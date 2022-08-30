@@ -1,14 +1,30 @@
-from django_filters.rest_framework import DjangoFilterBackend, RangeFilter, FilterSet
+from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBackend
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework import viewsets
 from rest_framework.response import Response
 
-from .serializers import AdvertisementSerializer, CitySerializer, CategorySerializer, ChildCategorySerializer, \
-    AdsSubscriberSerializer, AdsImageSerializer, NumberSerializer, ViewStatisticSerializer
+from .serializers import (
+    AdvertisementSerializer,
+    CitySerializer,
+    CategorySerializer,
+    ChildCategorySerializer,
+    AdsSubscriberSerializer,
+    AdsImageSerializer,
+    NumberSerializer,
+    ViewStatisticSerializer
+)
 
-from .models import Category, ChildCategory, Advertisement, AdsSubscriber, AdsImage, City, Number, ViewStatistic
+from .models import (
+    Category,
+    ChildCategory,
+    Advertisement,
+    AdsSubscriber,
+    AdsImage,
+    City,
+    Number,
+    ViewStatistic
+)
 
 
 class AdvertisementPriceFilterBackend(BaseFilterBackend):

@@ -1,6 +1,15 @@
 from rest_framework import serializers
 
-from .models import Category, ChildCategory, Advertisement, AdsSubscriber, AdsImage, City, Number, ViewStatistic
+from .models import (
+    Category,
+    ChildCategory,
+    Advertisement,
+    AdsSubscriber,
+    AdsImage,
+    City,
+    Number,
+    ViewStatistic
+)
 
 
 class AdvertisementSerializer(serializers.ModelSerializer):
@@ -16,8 +25,9 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         """
         Check that the start is before the stop.
         """
-        if data['price'] >= data['max_price']:
-            raise serializers.ValidationError({"max_price": "max_price can't be losses or equal than price!"})
+        if data.get('max_price'):
+            if data['price'] >= data['max_price']:
+                raise serializers.ValidationError({"max_price": "max_price can't be losses or equal than price!"})
         return data
 
     class Meta:
