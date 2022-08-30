@@ -68,7 +68,7 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
     def get_serializer_class(self, *args, **kwargs):
         serializer_class = AdvertisementSerializer
 
-        if self.action == 'GET':
+        if self.action == 'list':
             serializer_class = AdvertisementListSerializer
 
         return serializer_class

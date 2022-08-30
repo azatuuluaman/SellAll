@@ -34,7 +34,7 @@ class Category(models.Model):
 class ChildCategory(models.Model):
     name = models.CharField('Под-категория', max_length=100)
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, verbose_name='Категория',
-                                 related_name='child_category')
+                                 related_name='child_categories')
 
     def __str__(self):
         return self.name
@@ -46,9 +46,9 @@ class ChildCategory(models.Model):
 
 class Advertisement(models.Model):
     class Type(models.TextChoices):
-        ACTIVE = 'A', 'Активный'
-        CHECKING = 'C', 'На проверке'
-        DISABLE = 'D', 'Неактивен'
+        ACTIVE = ('A', 'Активный')
+        CHECKING = ('C', 'На проверке')
+        DISABLE = ('D', 'Неактивен')
 
     name = models.CharField('Название товара', max_length=100)
     price = models.PositiveIntegerField('Цена')
