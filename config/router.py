@@ -18,7 +18,7 @@ from siteapp.views import (
     FeedBackAPIView,
     HelpAPIView
 )
-from user.views import RegisterUserView, ActivationView, ForgotPasswordView
+from user.views import RegisterUserView, ActivationView
 
 router = routers.DefaultRouter()
 
@@ -31,7 +31,6 @@ urlpatterns = [
 urlpatterns_auth = [
     path('register/', RegisterUserView.as_view(), name='register'),
     path('activation/<str:code>/', ActivationView.as_view(), name='activate'),
-    path('forgot_password/', ForgotPasswordView.as_view(), name='forgot_password'),
 ]
 
 urlpatterns_ads = [

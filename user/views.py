@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 
 from .models import User
-from .serializers import UserRegisterSerializer, ForgotPasswordSerializer, ActivationSerializer
+from .serializers import UserRegisterSerializer, ActivationSerializer
 
 User = get_user_model()
 
