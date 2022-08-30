@@ -12,15 +12,36 @@ from .models import (
 )
 
 
-class AdvertisementSerializer(serializers.ModelSerializer):
+class AdvertisementListSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
     modified_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
     deleted_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
-    city_name = serializers.CharField(source='city.name', read_only=True)
-    child_category_name = serializers.CharField(source='child_category.name', read_only=True)
-    owner_username = serializers.CharField(source='owner.email', read_only=True)
+    city = serializers.CharField(source='city.name', read_only=True)
+    child_category = serializers.CharField(source='child_category.name', read_only=True)
+    owner = serializers.CharField(source='owner.email', read_only=True)
     images = serializers.StringRelatedField(many=True, read_only=True)
 
+    class Meta:
+        model = Advertisement
+        fields = ('id',
+                  'name',
+                  'price',
+                  'max_price',
+                  'description',
+                  'email',
+                  'whatsapp_number',
+                  'type',
+                  'created_at',
+                  'modified_at',
+                  'deleted_at',
+                  'city',
+                  'child_category',
+                  'owner',
+                  'images'
+                  )
+
+
+class AdvertisementSerializer(serializers.ModelSerializer):
     def validate(self, data):
         """
         Check that the start is before the stop.
@@ -32,33 +53,11 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Advertisement
-        fields = ('id',
-                  'name',
-                  'price',
-                  'max_price',
-                  'description',
-                  'email',
-                  'whatsapp_number',
-                  'created_at',
-                  'modified_at',
-                  'deleted_at',
-                  'city',
-                  'city_name',
-                  'child_category',
-                  'child_category_name',
-                  'owner',
-                  'owner_username',
-                  'images'
-                  )
-
-
-class AdsImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AdsImage
         fields = '__all__'
 
 
 class ChildCategorySerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source='category.name')
     ads_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -70,27 +69,38 @@ class ChildCategorySerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    # child_category = ChildCategorySerializer(many=True, read_only=True)
-
     class Meta:
         model = Category
-        fields = ('id', 'name', 'icon',)
-        # 'child_category'
+        fields = '__all__'
+
+
+class AdsImageSerializer(serializers.ModelSerializer):
+    advertisement = serializers.CharField(source='advertisement.name')
+
+    class Meta:
+        model = AdsImage
+        fields = '__all__'
 
 
 class AdsSubscriberSerializer(serializers.ModelSerializer):
+    advertisement = serializers.CharField(source='advertisement.name')
+    subscription = serializers.CharField(source='subscription.name')
+
     class Meta:
         model = AdsSubscriber
         fields = '__all__'
 
 
 class NumberSerializer(serializers.ModelSerializer):
+    advertisement = serializers.CharField(source='advertisement.name')
+
     class Meta:
         model = Number
         fields = '__all__'
 
 
 class ViewStatisticSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ViewStatistic
         fields = '__all__'

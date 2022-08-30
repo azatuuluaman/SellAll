@@ -159,6 +159,16 @@ REST_FRAMEWORK = {
     ),
 }
 
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+        'Bazar': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -174,7 +184,7 @@ SIMPLE_JWT = {
     'JWK_URL': None,
     'LEEWAY': 0,
 
-    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_TYPES': ('Bazar',),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
@@ -220,7 +230,7 @@ JAZZMIN_SETTINGS = {
     "welcome_sign": "Welcome to the admin panel",
 
     # Copyright on the footer
-    "copyright": "© 2022 GG",
+    "copyright": "GG",
 
     # The model admin to search from the search bar, search bar omitted if excluded
     "search_model": "auth.User",

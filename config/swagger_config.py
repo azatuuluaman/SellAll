@@ -10,7 +10,6 @@ schema_view = get_schema_view(
         title="BAZAR API",
         default_version='v1',
         description="API for BAZAR",
-        # terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="kulbarakovich@gmail.com"),
         license=openapi.License(name="KBZ License"),
     ),

@@ -2,11 +2,9 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-from datetime import date
-
 
 def get_upload_path_ad_image(instance, filename):
-    today = date.today()
+    today = timezone.datetime.today()
     return f"ad_images/{today.year}/{today.month}/{today.day}/{instance.advertisement.name}/{filename}"
 
 
@@ -47,6 +45,11 @@ class ChildCategory(models.Model):
 
 
 class Advertisement(models.Model):
+    class Type(models.TextChoices):
+        ACTIVE = 'A', 'Активный'
+        CHECKING = 'C', 'На проверке'
+        DISABLE = 'D', 'Неактивен'
+
     name = models.CharField('Название товара', max_length=100)
     price = models.PositiveIntegerField('Цена')
     max_price = models.PositiveIntegerField('Цена до', null=True, blank=True)
@@ -54,6 +57,7 @@ class Advertisement(models.Model):
     city = models.ForeignKey(City, on_delete=models.DO_NOTHING)
     email = models.EmailField('E-mail')
     whatsapp_number = models.CharField('W/A номер', max_length=20)
+    type = models.CharField('Статус объявления', max_length=1, choices=Type.choices, default=Type.CHECKING)
 
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
     modified_at = models.DateTimeField('Дата изменения', auto_now=True)
