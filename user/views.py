@@ -15,7 +15,8 @@ class RegisterUserView(generics.GenericAPIView):
 
     def post(self, request):
         data = request.data
-        serializer = UserRegisterSerializer(data=data)
+        context = {'request': request}
+        serializer = UserRegisterSerializer(data=data, context=context)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response('Пользователь успешно зарегистрирован', status=201)

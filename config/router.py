@@ -25,7 +25,6 @@ router.register('help', site_view.HelpAPIView)
 urlpatterns = [
     path('', include(router.urls)),
     path('register/', RegisterUserView.as_view(), name='register'),
-    path('activation/<str:code>/', ActivationView.as_view()),
-    path('forgot_password/', ForgotPasswordView.as_view()),
-
+    path('activation/<str:code>/', ActivationView.as_view(), name='activate'),
+    path('forgot_password/', ForgotPasswordView.as_view(), name='forgot_password'),
 ]
