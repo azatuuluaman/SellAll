@@ -22,8 +22,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
-    favourites = models.ManyToManyField(Advertisement, verbose_name='Избранные', related_name='favourites', blank=True)
-
     activation_code = models.CharField(max_length=8, blank=True)
 
     USERNAME_FIELD = 'email'

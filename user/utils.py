@@ -1,17 +1,13 @@
 from django.core.mail import send_mail
-from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
 
 from config.settings import EMAIL_HOST_USER
 
 
 def send_activation_mail(email, activation_code, request):
-    current_site = get_current_site(request=request)
     message = {
         'email_subject': 'Activation Code',
         'email_body': f"""Спасибо за регистрацию.
-        Активируйте аккаунт по ссылке:
-        http://{current_site.domain}{reverse('activate', kwargs={'code': activation_code})}""",
+        Активируйте аккаунт: {activation_code}""",
         'to_whom': email
     }
     Util.send_email(message)

@@ -74,14 +74,6 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class AdsImageSerializer(serializers.ModelSerializer):
-    advertisement = serializers.CharField(source='advertisement.name')
-
-    class Meta:
-        model = AdsImage
-        fields = '__all__'
-
-
 class AdsSubscriberSerializer(serializers.ModelSerializer):
     advertisement = serializers.CharField(source='advertisement.name')
     subscription = serializers.CharField(source='subscription.name')

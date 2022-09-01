@@ -1,7 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework import viewsets, generics, status
-
+from rest_framework import viewsets, generics
 from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBackend
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -13,7 +12,6 @@ from .serializers import (
     CategorySerializer,
     ChildCategorySerializer,
     AdsSubscriberSerializer,
-    AdsImageSerializer,
     NumberSerializer,
     ViewStatisticSerializer
 )
@@ -28,8 +26,6 @@ from .models import (
     Number,
     ViewStatistic
 )
-
-from .permissions import IsOwnerOrSuperUser
 
 
 class AdvertisementPriceFilterBackend(BaseFilterBackend):
@@ -108,11 +104,6 @@ class ChildCategoryAPIView(generics.ListAPIView):
 class AdsSubscriberAPIView(generics.ListAPIView):
     serializer_class = AdsSubscriberSerializer
     queryset = AdsSubscriber.objects.all()
-
-
-class AdsImageAPIView(generics.ListAPIView):
-    serializer_class = AdsImageSerializer
-    queryset = AdsImage.objects.all()
 
 
 class NumberAPIView(generics.ListAPIView):

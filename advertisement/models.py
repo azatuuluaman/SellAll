@@ -151,3 +151,15 @@ class ViewStatistic(models.Model):
     class Meta:
         verbose_name = 'Статистика'
         verbose_name_plural = 'Статистика'
+
+
+class Favorites(models.Model):
+    advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE, verbose_name='Объявление')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Пользователь')
+
+    def __str__(self):
+        return self.user
+
+    class Meta:
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранные'
