@@ -7,9 +7,21 @@ from .models import (
     AdsSubscriber,
     AdsImage,
     City,
-    Number,
+    PhoneNumber,
     ViewStatistic
 )
+
+
+class PhoneNumberListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PhoneNumber
+        fields = ('id', 'phone_number')
+
+
+class AdsImageListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdsImage
+        fields = ('id', 'image')
 
 
 class AdvertisementListSerializer(serializers.ModelSerializer):
@@ -19,41 +31,96 @@ class AdvertisementListSerializer(serializers.ModelSerializer):
     city = serializers.CharField(source='city.name', read_only=True)
     child_category = serializers.CharField(source='child_category.name', read_only=True)
     owner = serializers.CharField(source='owner.email', read_only=True)
-    images = serializers.StringRelatedField(many=True, read_only=True)
+    images = AdsImageListSerializer(many=True, read_only=True)
+    phone_numbers = PhoneNumberListSerializer(many=True, read_only=True)
 
     class Meta:
         model = Advertisement
-        fields = ('id',
-                  'name',
-                  'price',
-                  'max_price',
-                  'description',
-                  'email',
-                  'whatsapp_number',
-                  'type',
-                  'created_at',
-                  'modified_at',
-                  'deleted_at',
-                  'city',
-                  'child_category',
-                  'owner',
-                  'images'
-                  )
+        fields = (
+            'id',
+            'name',
+            'slug',
+            'price',
+            'max_price',
+            'description',
+            'email',
+            'whatsapp_number',
+            'type',
+            'created_at',
+            'modified_at',
+            'deleted_at',
+            'city',
+            'child_category',
+            'owner',
+            'images',
+            'phone_numbers'
+        )
+
+
+class AdsImageCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdsImage
+        fields = ('image', 'advertisement')
+
+
+class PhoneNumberCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PhoneNumber
+        fields = ('phone_number', 'advertisement')
 
 
 class AdvertisementSerializer(serializers.ModelSerializer):
+
     def validate(self, data):
         """
         Check that the start is before the stop.
         """
-        if data.get('max_price'):
-            if data['price'] >= data['max_price']:
+        images = self.context.get('images')
+        phone_numbers = self.context.get('phone_numbers')
+        price = data.get('price')
+        max_price = data.get('max_price')
+
+        if max_price:
+            if price >= max_price:
                 raise serializers.ValidationError({"max_price": "max_price can't be losses or equal than price!"})
+
+        if len(phone_numbers) < 1:
+            raise serializers.ValidationError({"phone_numbers": "Phone number can't be less 1!"})
+
+        if len(images) > 8:
+            raise serializers.ValidationError({"images": "Images count can't be more 8!"})
+
         return data
+
+    def create(self, validated_data):
+        instance = super(AdvertisementSerializer, self).create(validated_data)
+        instance.save()
+
+        images = self.context.get('images')
+        phone_numbers = self.context.get('phone_numbers')
+
+        for image in images:
+            AdsImage.objects.create(advertisement=instance, image=image)
+
+        for phone_number in phone_numbers:
+            PhoneNumber.objects.create(advertisement=instance, phone_number=phone_number)
+
+        return instance
 
     class Meta:
         model = Advertisement
-        fields = '__all__'
+        fields = (
+            'name',
+            'price',
+            'max_price',
+            'description',
+            'email',
+            'whatsapp_number',
+            'type',
+            'city',
+            'child_category',
+            'owner',
+        )
 
 
 class ChildCategorySerializer(serializers.ModelSerializer):
@@ -83,16 +150,7 @@ class AdsSubscriberSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class NumberSerializer(serializers.ModelSerializer):
-    advertisement = serializers.CharField(source='advertisement.name')
-
-    class Meta:
-        model = Number
-        fields = '__all__'
-
-
 class ViewStatisticSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = ViewStatistic
         fields = '__all__'

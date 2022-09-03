@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 def get_upload_path_ad_image(instance, filename):
@@ -46,18 +47,19 @@ class ChildCategory(models.Model):
 
 class Advertisement(models.Model):
     class Type(models.TextChoices):
-        ACTIVE = ('A', 'Активный')
-        CHECKING = ('C', 'На проверке')
-        DISABLE = ('D', 'Неактивен')
+        ACTIVE = 'Активный'
+        CHECKING = 'На проверке'
+        DISABLE = 'Неактивен'
 
     name = models.CharField('Название товара', max_length=100)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
     price = models.PositiveIntegerField('Цена')
     max_price = models.PositiveIntegerField('Цена до', null=True, blank=True)
     description = models.TextField('Ваше сообщение', max_length=4000)
     city = models.ForeignKey(City, on_delete=models.DO_NOTHING)
     email = models.EmailField('E-mail')
     whatsapp_number = models.CharField('W/A номер', max_length=20)
-    type = models.CharField('Статус объявления', max_length=1, choices=Type.choices, default=Type.CHECKING)
+    type = models.CharField('Статус объявления', max_length=20, choices=Type.choices, default=Type.CHECKING)
 
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
     modified_at = models.DateTimeField('Дата изменения', auto_now=True)
@@ -74,6 +76,8 @@ class Advertisement(models.Model):
             self.deleted_at = timezone.now()
         else:
             self.deleted_at = None
+
+        self.slug = slugify(f'{self.name}-{self.id}')
 
         super().save(*args, **kwargs)
 
@@ -127,9 +131,10 @@ class AdsImage(models.Model):
         verbose_name_plural = 'Изображения объявлений'
 
 
-class Number(models.Model):
-    number = models.CharField('Номер', max_length=20)
-    advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE, verbose_name='Объявление')
+class PhoneNumber(models.Model):
+    phone_number = models.CharField('Номер', max_length=20)
+    advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE,
+                                      verbose_name='Объявление', related_name='phone_numbers')
 
     def __str__(self):
         return self.advertisement.name
@@ -154,8 +159,10 @@ class ViewStatistic(models.Model):
 
 
 class Favorites(models.Model):
-    advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE, verbose_name='Объявление')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Пользователь')
+    advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE,
+                                      verbose_name='Объявление', related_name='favorites')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             verbose_name='Пользователь', related_name='favorites')
 
     def __str__(self):
         return self.user

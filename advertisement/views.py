@@ -1,9 +1,9 @@
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, status
 from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBackend
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .serializers import (
     AdvertisementSerializer,
@@ -12,7 +12,6 @@ from .serializers import (
     CategorySerializer,
     ChildCategorySerializer,
     AdsSubscriberSerializer,
-    NumberSerializer,
     ViewStatisticSerializer
 )
 
@@ -21,9 +20,7 @@ from .models import (
     ChildCategory,
     Advertisement,
     AdsSubscriber,
-    AdsImage,
     City,
-    Number,
     ViewStatistic
 )
 
@@ -66,6 +63,7 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
 
         if self.action == 'list':
             serializer_class = AdvertisementListSerializer
+            self.permission_classes = (AllowAny, )
 
         return serializer_class
 
@@ -73,10 +71,30 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
         user = self.request.user
         queryset = self.queryset
 
+        if self.action == 'list':
+            return queryset
+
         if user.is_authenticated and not user.is_superuser:
             queryset = Advertisement.objects.filter(owner=user)
 
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        images = request.FILES.getlist('images')
+        phone_numbers = request.data.getlist('phone_numbers')
+
+        data = request.data
+
+        context_data = {
+            'images': images,
+            'phone_numbers': phone_numbers,
+        }
+
+        serializer = self.get_serializer(data=data, context=context_data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -104,11 +122,6 @@ class ChildCategoryAPIView(generics.ListAPIView):
 class AdsSubscriberAPIView(generics.ListAPIView):
     serializer_class = AdsSubscriberSerializer
     queryset = AdsSubscriber.objects.all()
-
-
-class NumberAPIView(generics.ListAPIView):
-    serializer_class = NumberSerializer
-    queryset = Number.objects.all()
 
 
 class ViewStatisticAPIView(generics.GenericAPIView):

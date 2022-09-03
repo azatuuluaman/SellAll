@@ -9,7 +9,6 @@ from advertisement.views import (
     CityAPIView,
     ChildCategoryAPIView,
     AdsSubscriberAPIView,
-    NumberAPIView,
 )
 from siteapp.views import (
     SiteAPIView,
@@ -38,7 +37,6 @@ urlpatterns_ads = [
     path('cities/', CityAPIView.as_view(), name='cities'),
     path('statistic/<int:pk>/', ViewStatisticAPIView.as_view(), name='statistic'),
     path('subscribers/', AdsSubscriberAPIView.as_view(), name='subscribers'),
-    path('numbers/', NumberAPIView.as_view(), name='numbers'),
 ]
 
 urlpatterns_siteapp = [
