@@ -346,3 +346,7 @@ EMAIL_PORT = os.getenv('email_port')
 EMAIL_HOST_USER = os.getenv('email_login')
 EMAIL_HOST_PASSWORD = os.getenv('email_password')
 EMAIL_USE_TLS = True
+
+# Configure Django App for Heroku.
+import django_on_heroku
+django_on_heroku.settings(locals())
