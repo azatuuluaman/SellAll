@@ -5,6 +5,7 @@ from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBacke
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
+from .permissions import IsOwnerOrSuperUser
 from .serializers import (
     AdvertisementSerializer,
     AdvertisementListSerializer,
@@ -51,7 +52,7 @@ class AdvertisementPriceFilterBackend(BaseFilterBackend):
 class AdvertisementAPIView(viewsets.ModelViewSet):
     queryset = Advertisement.objects.all()
     serializer_class = AdvertisementSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny, )
 
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter, AdvertisementPriceFilterBackend)
     filterset_fields = ('child_category', 'city', 'is_delete')
@@ -63,21 +64,46 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
 
         if self.action == 'list':
             serializer_class = AdvertisementListSerializer
-            self.permission_classes = (AllowAny, )
+
+        if self.action == 'retrieve':
+            serializer_class = AdvertisementListSerializer
 
         return serializer_class
 
+    def get_permissions(self):
+        owner_actions = ('create', 'destroy', 'update')
+
+        if self.action in owner_actions:
+            self.permission_classes = [IsOwnerOrSuperUser]
+
+        return super(AdvertisementAPIView, self).get_permissions()
+
     def get_queryset(self):
-        user = self.request.user
-        queryset = self.queryset
+        queryset = super(AdvertisementAPIView, self).get_queryset()
 
         if self.action == 'list':
             return queryset
 
-        if user.is_authenticated and not user.is_superuser:
-            queryset = Advertisement.objects.filter(owner=user)
-
         return queryset
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        client_ip = get_client_ip(self.request)
+        redis_cache = caches['default']
+        redis_client = redis_cache.client.get_client()
+        # print(redis_client.hgetall(1))
+        # redis_client.hset(key=1, name=2022, value=str([client_ip, 'Hello']))
+        # data = redis_client.hget(key=1, name=2022)
+        # print(data)
+        # data_list = data.decode('utf-8').strip('\"][\'\\').split(', ')
+        # print(data_list)
+        # data_list.append('Many')
+        # redis_client.hset(key=1, name=2022, value=str(data_list))
+        # data = redis_client.hget(key=1, name=2022)
+        # data_list = data.decode('utf-8').strip('\"][\'\\').split(', ')
+        # print(data)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         images = request.FILES.getlist('images')
