@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Frameworks
+    'corsheaders',
     'drf_yasg',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -61,6 +62,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -346,6 +348,8 @@ EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_LOGIN')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
 EMAIL_USE_TLS = True
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Configure Django App for Heroku.
 import django_on_heroku
