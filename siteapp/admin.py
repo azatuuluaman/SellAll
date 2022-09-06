@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Site, SocialMedia, FeedBack, Help
+from .models import Site, SocialMedia, FeedBack, Help, HelpCategory
 
 from django.utils.safestring import mark_safe
 
@@ -51,3 +51,12 @@ class HelpAdmin(admin.ModelAdmin):
     """
     list_display = ('title', 'text')
     list_display_links = ('title',)
+
+
+@admin.register(HelpCategory)
+class HelpAdmin(admin.ModelAdmin):
+    """
+    Админ панель "Раздел помощь"
+    """
+    list_display = ('id', 'name')
+    list_display_links = ('name',)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Site, SocialMedia, FeedBack, Help
+from .models import Site, SocialMedia, FeedBack, Help, HelpCategory
 
 
 class SiteSerializer(serializers.ModelSerializer):
@@ -17,10 +17,22 @@ class SocialMediaSerializer(serializers.ModelSerializer):
 class FeedBackSerializer(serializers.ModelSerializer):
     class Meta:
         model = FeedBack
-        fields = '__all__'
+        fields = ('name', 'email', 'subject', 'text')
 
 
 class HelpSerializer(serializers.ModelSerializer):
     class Meta:
         model = Help
         fields = '__all__'
+
+
+class HelpCategorySerializer(serializers.ModelSerializer):
+    help = serializers.SerializerMethodField(read_only=True)
+
+    def get_help(self, obj):
+        instance = Help.objects.filter(category=obj)
+        return HelpSerializer(instance, many=True).data
+
+    class Meta:
+        model = HelpCategory
+        fields = ('id', 'name', 'help')

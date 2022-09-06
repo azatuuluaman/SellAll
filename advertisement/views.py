@@ -1,9 +1,12 @@
+from django.core.checks import caches
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets, generics, status
 from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBackend
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
+
+from .permissions import IsOwnerOrSuperUser, IsAuthorComment
 
 from .serializers import (
     AdvertisementSerializer,
@@ -12,7 +15,7 @@ from .serializers import (
     CategorySerializer,
     ChildCategorySerializer,
     AdsSubscriberSerializer,
-    ViewStatisticSerializer
+    ViewStatisticSerializer, AdsCommentSerializer, CategoryDetailSerializer
 )
 
 from .models import (
@@ -21,8 +24,9 @@ from .models import (
     Advertisement,
     AdsSubscriber,
     City,
-    ViewStatistic
+    ViewStatistic, AdsComment
 )
+from .utils import get_client_ip
 
 
 class AdvertisementPriceFilterBackend(BaseFilterBackend):
@@ -51,7 +55,7 @@ class AdvertisementPriceFilterBackend(BaseFilterBackend):
 class AdvertisementAPIView(viewsets.ModelViewSet):
     queryset = Advertisement.objects.all()
     serializer_class = AdvertisementSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter, AdvertisementPriceFilterBackend)
     filterset_fields = ('child_category', 'city', 'is_delete')
@@ -63,21 +67,35 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
 
         if self.action == 'list':
             serializer_class = AdvertisementListSerializer
-            self.permission_classes = (AllowAny, )
+
+        if self.action == 'retrieve':
+            serializer_class = AdvertisementListSerializer
 
         return serializer_class
 
+    def get_permissions(self):
+        owner_actions = ('create', 'destroy', 'update')
+
+        if self.action in owner_actions:
+            self.permission_classes = [IsOwnerOrSuperUser]
+
+        return super(AdvertisementAPIView, self).get_permissions()
+
     def get_queryset(self):
-        user = self.request.user
-        queryset = self.queryset
+        queryset = super(AdvertisementAPIView, self).get_queryset()
 
         if self.action == 'list':
             return queryset
 
-        if user.is_authenticated and not user.is_superuser:
-            queryset = Advertisement.objects.filter(owner=user)
-
         return queryset
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # client_ip = get_client_ip(self.request)
+        # redis_cache = caches['default']
+        # redis_client = redis_cache.client.get_client()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         images = request.FILES.getlist('images')
@@ -114,6 +132,11 @@ class CategoryAPIView(generics.ListAPIView):
     queryset = Category.objects.all()
 
 
+class CategoryRetrieveAPIView(generics.RetrieveAPIView):
+    serializer_class = CategoryDetailSerializer
+    queryset = Category.objects.all()
+
+
 class ChildCategoryAPIView(generics.ListAPIView):
     serializer_class = ChildCategorySerializer
     queryset = ChildCategory.objects.all()
@@ -141,3 +164,14 @@ class ViewStatisticAPIView(generics.GenericAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class AdsCommentCreateView(generics.CreateAPIView):
+    serializer_class = AdsCommentSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class AdsCommentRUDView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AdsCommentSerializer
+    queryset = AdsComment.objects.all()
+    permission_classes = [IsAuthorComment]
