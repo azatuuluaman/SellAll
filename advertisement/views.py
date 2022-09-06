@@ -1,4 +1,3 @@
-from django.core.checks import caches
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets, generics, status
@@ -26,7 +25,6 @@ from .models import (
     City,
     ViewStatistic, AdsComment
 )
-from .utils import get_client_ip
 
 
 class AdvertisementPriceFilterBackend(BaseFilterBackend):
@@ -91,9 +89,6 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        # client_ip = get_client_ip(self.request)
-        # redis_cache = caches['default']
-        # redis_client = redis_cache.client.get_client()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 

@@ -17,10 +17,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework import routers
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
+from advertisement.views import AdvertisementAPIView
+from user.views import RegisterUserView, ActivationView
 from .swagger_config import urlpatterns as swg
+
+
+router = routers.DefaultRouter()
+router.register('advertisement', AdvertisementAPIView)
 
 
 urlpatterns = [
@@ -28,7 +35,14 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),
     path('api/token/verify/', TokenVerifyView.as_view()),
-    path('api/', include('config.router'), name='api'),
+
+    path('api/register/', RegisterUserView.as_view(), name='register'),
+    path('api/activation/<str:code>/', ActivationView.as_view(), name='activate'),
+
+    path('api/', include(router.urls), name='api'),
+    path('api/', include('siteapp.urls')),
+    path('api/', include('advertisement.urls')),
+
 ]
 
 

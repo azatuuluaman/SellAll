@@ -17,3 +17,4 @@ class CityTestCase(APITestCase):
         response = self.client.get('/api/city/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(self.city_list), self.model.objects.count())
+
