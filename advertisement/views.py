@@ -15,7 +15,7 @@ from .serializers import (
     CategorySerializer,
     ChildCategorySerializer,
     AdsSubscriberSerializer,
-    ViewStatisticSerializer, AdsCommentSerializer
+    ViewStatisticSerializer, AdsCommentSerializer, CategoryDetailSerializer
 )
 
 from .models import (
@@ -91,9 +91,9 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        client_ip = get_client_ip(self.request)
-        redis_cache = caches['default']
-        redis_client = redis_cache.client.get_client()
+        # client_ip = get_client_ip(self.request)
+        # redis_cache = caches['default']
+        # redis_client = redis_cache.client.get_client()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
@@ -129,6 +129,11 @@ class CityAPIView(generics.ListAPIView):
 
 class CategoryAPIView(generics.ListAPIView):
     serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+
+
+class CategoryRetrieveAPIView(generics.RetrieveAPIView):
+    serializer_class = CategoryDetailSerializer
     queryset = Category.objects.all()
 
 

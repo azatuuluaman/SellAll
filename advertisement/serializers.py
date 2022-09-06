@@ -24,6 +24,20 @@ class AdsImageListSerializer(serializers.ModelSerializer):
         fields = ('id', 'image')
 
 
+class RecursiveSerializer(serializers.Serializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
+
+
+class AdsCommentSerializer(serializers.ModelSerializer):
+    children = RecursiveSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = AdsComment
+        fields = ('user', 'advertisement', 'text', 'parent', 'children')
+
+
 class AdvertisementListSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
     modified_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
@@ -33,6 +47,11 @@ class AdvertisementListSerializer(serializers.ModelSerializer):
     owner = serializers.CharField(source='owner.email', read_only=True)
     images = AdsImageListSerializer(many=True, read_only=True)
     phone_numbers = PhoneNumberListSerializer(many=True, read_only=True)
+    comments = serializers.SerializerMethodField(read_only=True)
+
+    def get_comments(self, obj):
+        instance = AdsComment.objects.filter(advertisement=obj, parent__isnull=True)
+        return AdsCommentSerializer(instance, many=True).data
 
     class Meta:
         model = Advertisement
@@ -53,7 +72,8 @@ class AdvertisementListSerializer(serializers.ModelSerializer):
             'child_category',
             'owner',
             'images',
-            'phone_numbers'
+            'phone_numbers',
+            'comments'
         )
 
 
@@ -141,6 +161,18 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CategoryDetailSerializer(serializers.ModelSerializer):
+    child_category = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Category
+        fields = ('id', 'name', 'icon', 'child_category')
+
+    def get_child_category(self, obj):
+        queryset = ChildCategory.objects.filter(category=obj)
+        return ChildCategorySerializer(queryset, many=True).data
+
+
 class AdsSubscriberSerializer(serializers.ModelSerializer):
     advertisement = serializers.CharField(source='advertisement.name')
     subscription = serializers.CharField(source='subscription.name')
@@ -160,17 +192,3 @@ class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = '__all__'
-
-
-class RecursiveSerializer(serializers.Serializer):
-    def to_representation(self, value):
-        serializer = self.parent.parent.__class__(value, context=self.context)
-        return serializer.data
-
-
-class AdsCommentSerializer(serializers.ModelSerializer):
-    children = RecursiveSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = AdsComment
-        fields = ('user', 'advertisement', 'text', 'parent', 'children')

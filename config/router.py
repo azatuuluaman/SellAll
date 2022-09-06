@@ -10,7 +10,7 @@ from advertisement.views import (
     ChildCategoryAPIView,
     AdsSubscriberAPIView,
     AdsCommentCreateView,
-    AdsCommentRUDView
+    AdsCommentRUDView, CategoryRetrieveAPIView
 )
 from siteapp.views import (
     SiteAPIView,
@@ -35,6 +35,7 @@ urlpatterns_auth = [
 
 urlpatterns_ads = [
     path('categories/', CategoryAPIView.as_view(), name='categories'),
+    path('category/<int:pk>/', CategoryRetrieveAPIView.as_view(), name='category'),
     path('child-categories/', ChildCategoryAPIView.as_view(), name='child_categories'),
     path('cities/', CityAPIView.as_view(), name='cities'),
     path('statistic/<int:pk>/', ViewStatisticAPIView.as_view(), name='statistic'),

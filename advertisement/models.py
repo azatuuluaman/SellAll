@@ -119,7 +119,7 @@ class AdsSubscriber(models.Model):
 
 class AdsImage(models.Model):
     image = models.ImageField('Фотография', upload_to=get_upload_path_ad_image)
-    advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE, verbose_name='Фотографии',
+    advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE, verbose_name='Объявление',
                                       help_text='Объявления с фото получают в среднем в 3-5 раз больше '
                                                 'откликов. Вы можете загрузить до 8 фотографий',
                                       related_name='images')
