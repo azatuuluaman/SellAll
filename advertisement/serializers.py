@@ -8,7 +8,7 @@ from .models import (
     AdsImage,
     City,
     PhoneNumber,
-    ViewStatistic
+    ViewStatistic, AdsComment
 )
 
 
@@ -160,3 +160,17 @@ class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = '__all__'
+
+
+class RecursiveSerializer(serializers.Serializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
+
+
+class AdsCommentSerializer(serializers.ModelSerializer):
+    children = RecursiveSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = AdsComment
+        fields = ('user', 'advertisement', 'text', 'parent', 'children')

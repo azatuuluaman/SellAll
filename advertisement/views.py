@@ -4,9 +4,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, generics, status
 from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBackend
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from .permissions import IsOwnerOrSuperUser
+from .permissions import IsOwnerOrSuperUser, IsAuthorComment
 
 from .serializers import (
     AdvertisementSerializer,
@@ -15,7 +15,7 @@ from .serializers import (
     CategorySerializer,
     ChildCategorySerializer,
     AdsSubscriberSerializer,
-    ViewStatisticSerializer
+    ViewStatisticSerializer, AdsCommentSerializer
 )
 
 from .models import (
@@ -24,7 +24,7 @@ from .models import (
     Advertisement,
     AdsSubscriber,
     City,
-    ViewStatistic
+    ViewStatistic, AdsComment
 )
 from .utils import get_client_ip
 
@@ -55,7 +55,7 @@ class AdvertisementPriceFilterBackend(BaseFilterBackend):
 class AdvertisementAPIView(viewsets.ModelViewSet):
     queryset = Advertisement.objects.all()
     serializer_class = AdvertisementSerializer
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
 
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter, AdvertisementPriceFilterBackend)
     filterset_fields = ('child_category', 'city', 'is_delete')
@@ -159,3 +159,14 @@ class ViewStatisticAPIView(generics.GenericAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class AdsCommentCreateView(generics.CreateAPIView):
+    serializer_class = AdsCommentSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class AdsCommentRUDView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AdsCommentSerializer
+    queryset = AdsComment.objects.all()
+    permission_classes = [IsAuthorComment]

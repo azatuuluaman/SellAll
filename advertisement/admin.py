@@ -9,7 +9,7 @@ from .models import (
     City,
     PhoneNumber,
     ViewStatistic,
-    Subscription
+    Subscription, AdsComment
 )
 
 
@@ -85,3 +85,10 @@ class AdsImageAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'advertisement')
     list_filter = ('advertisement',)
     search_fields = ('advertisement',)
+
+
+@admin.register(AdsComment)
+class AdsCommentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'text', 'advertisement', 'created_on', 'modified_at')
+    list_filter = ('created_on', 'modified_at', 'user')
+    search_fields = ('user', 'text')

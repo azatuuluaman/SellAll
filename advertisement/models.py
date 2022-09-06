@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
+from rest_framework.reverse import reverse
 
 
 def get_upload_path_ad_image(instance, filename):
@@ -62,13 +63,16 @@ class Advertisement(models.Model):
     type = models.CharField('Статус объявления', max_length=20, choices=Type.choices, default=Type.CHECKING)
 
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
-    modified_at = models.DateTimeField('Дата изменения', auto_now=True)
+    modified_at = models.DateTimeField('Последняя дата изменения', auto_now=True)
     deleted_at = models.DateTimeField('Дата удаления', null=True, blank=True)
 
     is_delete = models.BooleanField('Удален', default=False)
 
     child_category = models.ForeignKey(ChildCategory, on_delete=models.DO_NOTHING, verbose_name='Подкатегория')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, verbose_name='Автор')
+
+    def __str__(self):
+        return self.name
 
     def save(self, *args, **kwargs):
         # Проверка на удаление
@@ -80,9 +84,6 @@ class Advertisement(models.Model):
         self.slug = slugify(f'{self.name}-{self.id}')
 
         super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
 
     class Meta:
         verbose_name = 'Объявление'
@@ -170,3 +171,31 @@ class Favorites(models.Model):
     class Meta:
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранные'
+
+
+class AdsComment(models.Model):
+    advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE, related_name='comments',
+                                      verbose_name='Объявление')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Пользователь')
+    text = models.TextField('Комментарий')
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name='children',
+                               verbose_name='Родительский комментарий', null=True, blank=True)
+    created_on = models.DateTimeField('Дата создания', auto_now_add=True)
+    modified_at = models.DateTimeField('Последняя дата изменения', auto_now=True)
+
+    def __str__(self):
+        return f'Comment {self.text} by {self.user}'
+
+    def children(self):
+        return AdsComment.objects.filter(parent=self)
+
+    @property
+    def is_parent(self):
+        if self.parent is not None:
+            return False
+        return True
+
+    class Meta:
+        verbose_name = 'Коментарий'
+        verbose_name_plural = 'Кометарии'
+        ordering = ['created_on']
