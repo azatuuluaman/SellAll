@@ -1,9 +1,21 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 
-from .serializers import SiteSerializer, SocialMediaSerializer, FeedBackSerializer, HelpSerializer, \
+from .serializers import (
+    SiteSerializer,
+    SocialMediaSerializer,
+    FeedBackSerializer,
+    HelpSerializer,
     HelpCategorySerializer
-from .models import Site, SocialMedia, FeedBack, Help, HelpCategory
+)
+
+from .models import (
+    Site,
+    SocialMedia,
+    FeedBack,
+    Help,
+    HelpCategory
+)
 
 
 class SiteAPIView(generics.ListAPIView):
