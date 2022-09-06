@@ -17,7 +17,7 @@ class SocialMediaSerializer(serializers.ModelSerializer):
 class FeedBackSerializer(serializers.ModelSerializer):
     class Meta:
         model = FeedBack
-        fields = '__all__'
+        fields = ('name', 'email', 'subject', 'text')
 
 
 class HelpSerializer(serializers.ModelSerializer):

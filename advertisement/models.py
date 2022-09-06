@@ -48,9 +48,9 @@ class ChildCategory(models.Model):
 
 class Advertisement(models.Model):
     class Type(models.TextChoices):
-        ACTIVE = 'Активный'
-        CHECKING = 'На проверке'
-        DISABLE = 'Неактивен'
+        ACTIVE = 'Активный', 'Активный'
+        CHECKING = 'На проверке', 'На проверке'
+        DISABLE = 'Неактивен', 'Неактивен'
 
     name = models.CharField('Название товара', max_length=100)
     slug = models.SlugField(max_length=255, unique=True, blank=True)
