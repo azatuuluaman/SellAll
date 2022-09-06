@@ -2,7 +2,6 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
-from rest_framework.reverse import reverse
 
 
 def get_upload_path_ad_image(instance, filename):
@@ -23,7 +22,7 @@ class City(models.Model):
 
 class Category(models.Model):
     name = models.CharField('Категория', max_length=100)
-    icon = models.ImageField('Иконка')
+    icon = models.FileField('Иконка')
 
     def __str__(self):
         return self.name
