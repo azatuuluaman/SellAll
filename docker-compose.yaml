@@ -1,14 +1,22 @@
 version: "3.9"
 
 services:
+  db:
+    image: postgres:latest
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - POSTGRES_DB=bazar
+      - POSTGRES_USER=bazar
+      - POSTGRES_PASSWORD=admin
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
+      - /etc/localtime:/etc/localtime:ro
     ports:
       - "8000:8000"
-    environment:
-      - POSTGRES_NAME=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - db
