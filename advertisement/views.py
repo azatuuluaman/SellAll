@@ -1,11 +1,13 @@
+from django.core.checks import caches
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets, generics, status
 from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBackend
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny
 
 from .permissions import IsOwnerOrSuperUser
+
 from .serializers import (
     AdvertisementSerializer,
     AdvertisementListSerializer,
@@ -24,6 +26,7 @@ from .models import (
     City,
     ViewStatistic
 )
+from .utils import get_client_ip
 
 
 class AdvertisementPriceFilterBackend(BaseFilterBackend):
@@ -91,17 +94,6 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
         client_ip = get_client_ip(self.request)
         redis_cache = caches['default']
         redis_client = redis_cache.client.get_client()
-        # print(redis_client.hgetall(1))
-        # redis_client.hset(key=1, name=2022, value=str([client_ip, 'Hello']))
-        # data = redis_client.hget(key=1, name=2022)
-        # print(data)
-        # data_list = data.decode('utf-8').strip('\"][\'\\').split(', ')
-        # print(data_list)
-        # data_list.append('Many')
-        # redis_client.hset(key=1, name=2022, value=str(data_list))
-        # data = redis_client.hget(key=1, name=2022)
-        # data_list = data.decode('utf-8').strip('\"][\'\\').split(', ')
-        # print(data)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
