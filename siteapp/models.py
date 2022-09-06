@@ -55,9 +55,22 @@ class FeedBack(models.Model):
         verbose_name_plural = 'Обратная связь'
 
 
+class HelpCategory(models.Model):
+    name = models.CharField('Название', max_length=100)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Категория помощи'
+        verbose_name_plural = 'Категории помощи'
+
+
 class Help(models.Model):
     title = models.CharField('Загаловок', max_length=100)
     text = models.TextField('Текст', max_length=5000)
+    category = models.ForeignKey(HelpCategory, on_delete=models.DO_NOTHING, related_name='help',
+                                 verbose_name='Категория')
 
     def __str__(self):
         return self.title

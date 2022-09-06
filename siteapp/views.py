@@ -1,8 +1,9 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 
-from .serializers import SiteSerializer, SocialMediaSerializer, FeedBackSerializer, HelpSerializer
-from .models import Site, SocialMedia, FeedBack, Help
+from .serializers import SiteSerializer, SocialMediaSerializer, FeedBackSerializer, HelpSerializer, \
+    HelpCategorySerializer
+from .models import Site, SocialMedia, FeedBack, Help, HelpCategory
 
 
 class SiteAPIView(generics.ListAPIView):
@@ -23,7 +24,13 @@ class FeedBackAPIView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
 
-class HelpAPIView(generics.ListAPIView):
+class HelpAPIView(generics.RetrieveAPIView):
     serializer_class = HelpSerializer
     queryset = Help.objects.all()
+    permission_classes = [AllowAny]
+
+
+class HelpCategoryAPIView(generics.ListAPIView):
+    serializer_class = HelpCategorySerializer
+    queryset = HelpCategory.objects.all()
     permission_classes = [AllowAny]

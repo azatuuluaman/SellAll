@@ -16,7 +16,7 @@ from siteapp.views import (
     SiteAPIView,
     SocialMediaAPIView,
     FeedBackAPIView,
-    HelpAPIView
+    HelpAPIView, HelpCategoryAPIView
 )
 from user.views import RegisterUserView, ActivationView
 
@@ -45,10 +45,11 @@ urlpatterns_ads = [
 ]
 
 urlpatterns_siteapp = [
-    path('site', SiteAPIView.as_view(), name='site'),
-    path('social-media', SocialMediaAPIView.as_view(), name='social_media'),
-    path('feedback', FeedBackAPIView.as_view(), name='feedback'),
-    path('help', HelpAPIView.as_view(), name='help'),
+    path('site/', SiteAPIView.as_view(), name='site'),
+    path('social-media/', SocialMediaAPIView.as_view(), name='social_media'),
+    path('feedback/', FeedBackAPIView.as_view(), name='feedback'),
+    path('help-category/', HelpCategoryAPIView.as_view(), name='help_category'),
+    path('help/<int:pk>/', HelpAPIView.as_view(), name='help'),
 ]
 
 urlpatterns += urlpatterns_auth
