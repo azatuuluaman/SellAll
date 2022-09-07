@@ -1,12 +1,9 @@
-from django.conf import settings
 from django.db import models
+from django.conf import settings
 from django.utils import timezone
 from django.utils.text import slugify
 
-
-def get_upload_path_ad_image(instance, filename):
-    today = timezone.datetime.today()
-    return f"ad_images/{today.year}/{today.month}/{today.day}/{instance.advertisement.name}/{filename}"
+from cloudinary.models import CloudinaryField
 
 
 class City(models.Model):
@@ -22,7 +19,7 @@ class City(models.Model):
 
 class Category(models.Model):
     name = models.CharField('Категория', max_length=100)
-    icon = models.FileField('Иконка')
+    icon = CloudinaryField('icon')
 
     def __str__(self):
         return self.name
@@ -91,7 +88,7 @@ class Advertisement(models.Model):
 
 class Subscription(models.Model):
     name = models.CharField('Название', max_length=100)
-    icon = models.ImageField('Иконка')
+    icon = CloudinaryField('icon')
 
     def __str__(self):
         return self.name
@@ -117,7 +114,7 @@ class AdsSubscriber(models.Model):
 
 
 class AdsImage(models.Model):
-    image = models.ImageField('Фотография', upload_to=get_upload_path_ad_image)
+    image = CloudinaryField('image')
     advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE, verbose_name='Объявление',
                                       help_text='Объявления с фото получают в среднем в 3-5 раз больше '
                                                 'откликов. Вы можете загрузить до 8 фотографий',
