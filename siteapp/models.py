@@ -5,7 +5,7 @@ from cloudinary.models import CloudinaryField
 
 class Site(models.Model):
     name = models.CharField('Название сайта', max_length=100)
-    logo = CloudinaryField('logo')
+    logo = CloudinaryField('Логотип')
     privacy_policy_text = models.TextField('Политика конфиденциальности текст', max_length=5000)
     copyright = models.CharField('Авторские права', max_length=20)
 
@@ -23,7 +23,7 @@ class SocialMedia(models.Model):
         APP = 'App', 'App'
 
     name = models.CharField('Название', max_length=100)
-    image = CloudinaryField('image')
+    image = CloudinaryField('Изображение')
     type = models.CharField('Тип', max_length=20, choices=Type.choices, default=Type.SOCIAL_NETWORK)
     link = models.CharField('Ссылка', max_length=100)
     site = models.ForeignKey(Site, verbose_name='Сайт', on_delete=models.DO_NOTHING)

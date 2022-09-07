@@ -19,7 +19,7 @@ class City(models.Model):
 
 class Category(models.Model):
     name = models.CharField('Категория', max_length=100)
-    icon = CloudinaryField('icon')
+    icon = CloudinaryField('Иконка')
 
     def __str__(self):
         return self.name
@@ -88,7 +88,7 @@ class Advertisement(models.Model):
 
 class Subscription(models.Model):
     name = models.CharField('Название', max_length=100)
-    icon = CloudinaryField('icon')
+    icon = CloudinaryField('Иконка')
 
     def __str__(self):
         return self.name
@@ -114,7 +114,7 @@ class AdsSubscriber(models.Model):
 
 
 class AdsImage(models.Model):
-    image = CloudinaryField('image')
+    image = CloudinaryField('Фотография')
     advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE, verbose_name='Объявление',
                                       help_text='Объявления с фото получают в среднем в 3-5 раз больше '
                                                 'откликов. Вы можете загрузить до 8 фотографий',
