@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 from .models import (
     Category,
@@ -30,8 +31,17 @@ class AdvertisementAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'icon')
+    list_display = ('id', 'name', 'get_icon')
     list_display_links = ('id', 'name')
+    readonly_fields = ('get_icon',)
+
+    def get_icon(self, obj):
+        """
+        Метод для получение картинки в виде отрендеренного html
+        """
+        return mark_safe(f'<img src={obj.icon.url} width="150" height="150">') if obj.icon else '-'
+
+    get_icon.short_description = 'Иконка'
 
 
 @admin.register(ChildCategory)
@@ -44,9 +54,18 @@ class ChildCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'icon')
+    list_display = ('id', 'name', 'get_icon')
     list_display_links = ('id', 'name')
     search_fields = ('name',)
+    readonly_fields = ('get_icon',)
+
+    def get_icon(self, obj):
+        """
+        Метод для получение картинки в виде отрендеренного html
+        """
+        return mark_safe(f'<img src={obj.icon.url} width="130" height="180">') if obj.icon else '-'
+
+    get_icon.short_description = 'Иконка'
 
 
 @admin.register(AdsSubscriber)
@@ -81,10 +100,19 @@ class ViewStatisticAdmin(admin.ModelAdmin):
 
 @admin.register(AdsImage)
 class AdsImageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'advertisement', 'image')
+    list_display = ('id', 'advertisement', 'get_image')
     list_display_links = ('id', 'advertisement')
     list_filter = ('advertisement',)
     search_fields = ('advertisement',)
+    readonly_fields = ('get_image',)
+
+    def get_image(self, obj):
+        """
+        Метод для получение картинки в виде отрендеренного html
+        """
+        return mark_safe(f'<img src={obj.image.url} width="130" height="180">') if obj.image else '-'
+
+    get_image.short_description = 'Изображение'
 
 
 @admin.register(AdsComment)
