@@ -7,15 +7,9 @@ from .models import (
     AdsSubscriber,
     AdsImage,
     City,
-    # PhoneNumber,
-    ViewStatistic, AdsComment
+    ViewStatistic,
+    AdsComment
 )
-
-#
-# class PhoneNumberListSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = PhoneNumber
-#         fields = ('id', 'phone_number')
 
 
 class AdsImageListSerializer(serializers.ModelSerializer):
@@ -48,7 +42,6 @@ class AdvertisementListSerializer(serializers.ModelSerializer):
     child_category = serializers.CharField(source='child_category.name', read_only=True)
     owner = serializers.CharField(source='owner.email', read_only=True)
     images = AdsImageListSerializer(many=True, read_only=True)
-    # phone_numbers = PhoneNumberListSerializer(many=True, read_only=True)
     comments = serializers.SerializerMethodField(read_only=True)
 
     def get_comments(self, obj):
@@ -85,12 +78,6 @@ class AdsImageCreateSerializer(serializers.ModelSerializer):
         fields = ('image', 'advertisement')
 
 
-# class PhoneNumberCreateSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = PhoneNumber
-#         fields = ('phone_number', 'advertisement')
-
-
 class AdvertisementSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
@@ -119,13 +106,9 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         instance.save()
 
         images = self.context.get('images')
-        phone_numbers = self.context.get('phone_numbers')
 
         for image in images:
             AdsImage.objects.create(advertisement=instance, image=image)
-
-        # for phone_number in phone_numbers:
-        #     PhoneNumber.objects.create(advertisement=instance, phone_number=phone_number)
 
         return instance
 

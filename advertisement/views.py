@@ -94,13 +94,10 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         images = request.FILES.getlist('images')
-        phone_numbers = request.data.getlist('phone_numbers')
-
         data = request.data
 
         context_data = {
             'images': images,
-            'phone_numbers': phone_numbers,
         }
 
         serializer = self.get_serializer(data=data, context=context_data)

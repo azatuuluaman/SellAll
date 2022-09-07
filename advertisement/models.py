@@ -129,19 +129,6 @@ class AdsImage(models.Model):
         verbose_name_plural = 'Изображения объявлений'
 
 
-# class PhoneNumber(models.Model):
-#     phone_number = PhoneNumberField('Номер телефона')
-#     advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE,
-#                                       verbose_name='Объявление', related_name='phone_numbers')
-#
-#     def __str__(self):
-#         return self.advertisement.name
-#
-#     class Meta:
-#         verbose_name = 'Номер'
-#         verbose_name_plural = 'Номера'
-
-
 class ViewStatistic(models.Model):
     views_count = models.PositiveIntegerField('Число просмотров')
     contact_view_count = models.PositiveIntegerField('Статистика просмотров контактов')
