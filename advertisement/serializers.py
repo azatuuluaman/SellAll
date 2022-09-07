@@ -58,6 +58,7 @@ class AdvertisementListSerializer(serializers.ModelSerializer):
             'max_price',
             'description',
             'email',
+            'phone_numbers',
             'whatsapp_number',
             'type',
             'created_at',
@@ -67,7 +68,6 @@ class AdvertisementListSerializer(serializers.ModelSerializer):
             'child_category',
             'owner',
             'images',
-            'phone_numbers',
             'comments'
         )
 
@@ -120,6 +120,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
             'max_price',
             'description',
             'email',
+            'phone_numbers',
             'whatsapp_number',
             'type',
             'city',
