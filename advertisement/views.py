@@ -56,7 +56,7 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
 
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter, AdvertisementPriceFilterBackend)
-    filterset_fields = ('child_category', 'city', 'is_delete')
+    filterset_fields = ('child_category', 'city', 'disable_date')
     search_fields = ('name',)
     ordering_fields = ('created_at', 'price')
 
@@ -108,7 +108,7 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.is_delete = True
+        instance.disable_date = True
         instance.save()
         serializer = self.serializer_class(instance)
         return Response(serializer.data)
