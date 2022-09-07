@@ -8,7 +8,6 @@ from .models import (
     AdsSubscriber,
     AdsImage,
     City,
-    PhoneNumber,
     ViewStatistic,
     Subscription, AdsComment
 )
@@ -82,12 +81,12 @@ class CityAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'name')
 
 
-@admin.register(PhoneNumber)
-class PhoneNumberAdmin(admin.ModelAdmin):
-    list_display = ('id', 'advertisement', 'phone_number')
-    list_display_links = ('id', 'advertisement', 'phone_number')
-    list_filter = ('advertisement',)
-    search_fields = ('advertisement', 'phone_number')
+# @admin.register(PhoneNumber)
+# class PhoneNumberAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'advertisement', 'phone_number')
+#     list_display_links = ('id', 'advertisement', 'phone_number')
+#     list_filter = ('advertisement',)
+#     search_fields = ('advertisement', 'phone_number')
 
 
 @admin.register(ViewStatistic)

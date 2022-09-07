@@ -7,15 +7,15 @@ from .models import (
     AdsSubscriber,
     AdsImage,
     City,
-    PhoneNumber,
+    # PhoneNumber,
     ViewStatistic, AdsComment
 )
 
-
-class PhoneNumberListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PhoneNumber
-        fields = ('id', 'phone_number')
+#
+# class PhoneNumberListSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = PhoneNumber
+#         fields = ('id', 'phone_number')
 
 
 class AdsImageListSerializer(serializers.ModelSerializer):
@@ -48,7 +48,7 @@ class AdvertisementListSerializer(serializers.ModelSerializer):
     child_category = serializers.CharField(source='child_category.name', read_only=True)
     owner = serializers.CharField(source='owner.email', read_only=True)
     images = AdsImageListSerializer(many=True, read_only=True)
-    phone_numbers = PhoneNumberListSerializer(many=True, read_only=True)
+    # phone_numbers = PhoneNumberListSerializer(many=True, read_only=True)
     comments = serializers.SerializerMethodField(read_only=True)
 
     def get_comments(self, obj):
@@ -85,10 +85,10 @@ class AdsImageCreateSerializer(serializers.ModelSerializer):
         fields = ('image', 'advertisement')
 
 
-class PhoneNumberCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PhoneNumber
-        fields = ('phone_number', 'advertisement')
+# class PhoneNumberCreateSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = PhoneNumber
+#         fields = ('phone_number', 'advertisement')
 
 
 class AdvertisementSerializer(serializers.ModelSerializer):
@@ -98,7 +98,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         Check that the start is before the stop.
         """
         images = self.context.get('images')
-        phone_numbers = self.context.get('phone_numbers')
+        # phone_numbers = self.context.get('phone_numbers')
         price = data.get('price')
         max_price = data.get('max_price')
 
@@ -106,8 +106,8 @@ class AdvertisementSerializer(serializers.ModelSerializer):
             if price >= max_price:
                 raise serializers.ValidationError({"max_price": "max_price can't be losses or equal than price!"})
 
-        if len(phone_numbers) < 1:
-            raise serializers.ValidationError({"phone_numbers": "Phone number can't be less 1!"})
+        # if len(phone_numbers) < 1:
+        #     raise serializers.ValidationError({"phone_numbers": "Phone number can't be less 1!"})
 
         if len(images) > 8:
             raise serializers.ValidationError({"images": "Images count can't be more 8!"})
@@ -124,8 +124,8 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         for image in images:
             AdsImage.objects.create(advertisement=instance, image=image)
 
-        for phone_number in phone_numbers:
-            PhoneNumber.objects.create(advertisement=instance, phone_number=phone_number)
+        # for phone_number in phone_numbers:
+        #     PhoneNumber.objects.create(advertisement=instance, phone_number=phone_number)
 
         return instance
 

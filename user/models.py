@@ -1,7 +1,9 @@
+from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.utils.crypto import get_random_string
-from django.db import models
+
+from phonenumber_field.modelfields import PhoneNumberField
 
 from advertisement.models import Advertisement
 
@@ -13,7 +15,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, db_index=True)
     first_name = models.CharField('Name', max_length=100)
     last_name = models.CharField('Surname', max_length=100)
-    phone_number = models.CharField('Phone number', max_length=20)
+    phone_number = PhoneNumberField('Номер телефона')
 
     created = models.DateTimeField('created', auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)

@@ -1,8 +1,10 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.conf import settings
 from django.utils import timezone
 from django.utils.text import slugify
 
+from phonenumber_field.modelfields import PhoneNumberField
 from cloudinary.models import CloudinaryField
 
 
@@ -55,14 +57,13 @@ class Advertisement(models.Model):
     description = models.TextField('Ваше сообщение', max_length=4000)
     city = models.ForeignKey(City, on_delete=models.DO_NOTHING)
     email = models.EmailField('E-mail')
-    whatsapp_number = models.CharField('W/A номер', max_length=20)
+    phone_numbers = ArrayField(PhoneNumberField('Номер телефона'), size=8)
+    whatsapp_number = PhoneNumberField('W/A номер')
     type = models.CharField('Статус объявления', max_length=20, choices=Type.choices, default=Type.CHECKING)
 
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
     modified_at = models.DateTimeField('Последняя дата изменения', auto_now=True)
-    deleted_at = models.DateTimeField('Дата удаления', null=True, blank=True)
-
-    is_delete = models.BooleanField('Удален', default=False)
+    disable_date = models.DateTimeField('Неактивен с', null=True, blank=True)
 
     child_category = models.ForeignKey(ChildCategory, on_delete=models.DO_NOTHING, verbose_name='Подкатегория')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, verbose_name='Автор')
@@ -72,12 +73,12 @@ class Advertisement(models.Model):
 
     def save(self, *args, **kwargs):
         # Проверка на удаление
-        if self.is_delete:
-            self.deleted_at = timezone.now()
+        if self.type == self.Type.DISABLE:
+            self.disable_date = timezone.now()
         else:
-            self.deleted_at = None
+            self.disable_date = None
 
-        self.slug = slugify(f'{self.name}-{self.id}')
+        self.slug = slugify(f'{self.name}-{self.owner.pk}')
 
         super().save(*args, **kwargs)
 
@@ -128,17 +129,17 @@ class AdsImage(models.Model):
         verbose_name_plural = 'Изображения объявлений'
 
 
-class PhoneNumber(models.Model):
-    phone_number = models.CharField('Номер', max_length=20)
-    advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE,
-                                      verbose_name='Объявление', related_name='phone_numbers')
-
-    def __str__(self):
-        return self.advertisement.name
-
-    class Meta:
-        verbose_name = 'Номер'
-        verbose_name_plural = 'Номера'
+# class PhoneNumber(models.Model):
+#     phone_number = PhoneNumberField('Номер телефона')
+#     advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE,
+#                                       verbose_name='Объявление', related_name='phone_numbers')
+#
+#     def __str__(self):
+#         return self.advertisement.name
+#
+#     class Meta:
+#         verbose_name = 'Номер'
+#         verbose_name_plural = 'Номера'
 
 
 class ViewStatistic(models.Model):
