@@ -3,12 +3,16 @@ from .models import Site, SocialMedia, FeedBack, Help, HelpCategory
 
 
 class SiteSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False)
+
     class Meta:
         model = Site
         fields = '__all__'
 
 
 class SocialMediaSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False)
+
     class Meta:
         model = SocialMedia
         fields = '__all__'

@@ -19,6 +19,8 @@ class PhoneNumberListSerializer(serializers.ModelSerializer):
 
 
 class AdsImageListSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False)
+
     class Meta:
         model = AdsImage
         fields = ('id', 'image')
@@ -156,6 +158,8 @@ class ChildCategorySerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    icon = serializers.ImageField(required=False)
+
     class Meta:
         model = Category
         fields = '__all__'
@@ -171,6 +175,9 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
     def get_child_category(self, obj):
         queryset = ChildCategory.objects.filter(category=obj)
         return ChildCategorySerializer(queryset, many=True).data
+
+    def get_icon(self, obj):
+        return obj.icon.url
 
 
 class AdsSubscriberSerializer(serializers.ModelSerializer):
