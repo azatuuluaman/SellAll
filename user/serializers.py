@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth import password_validation
 
 from rest_framework import serializers
 
@@ -17,9 +18,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(min_length=6, required=True)
     password_confirm = serializers.CharField(min_length=6, required=True)
 
-    class Meta:
-        model = User
-        fields = ['email', 'first_name', 'last_name', 'phone_number', 'password', 'password_confirm']
+    def validate_password(self, value):
+        password_validation.validate_password(value, self.instance)
+        return value
 
     def validate_email(self, email):
         if User.objects.filter(email=email).exists():
@@ -38,3 +39,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user.create_activation_code()
         send_activation_mail(user.email, user.activation_code, self.context['request'])
         return user
+
+    class Meta:
+        model = User
+        fields = ['email', 'first_name', 'last_name', 'phone_number', 'password', 'password_confirm']
