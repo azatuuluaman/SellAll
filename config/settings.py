@@ -246,7 +246,7 @@ JAZZMIN_SETTINGS = {
     "copyright": "GG",
 
     # The model admin to search from the search bar, search bar omitted if excluded
-    "search_model": "auth.User",
+    "search_model": AUTH_USER_MODEL,
 
     # Field name on user model that contains avatar ImageField/URLField/Charfield or a callable that receives the user
     "user_avatar": None,

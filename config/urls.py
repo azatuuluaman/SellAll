@@ -19,7 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from rest_framework import routers
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView, TokenBlacklistView
 
 from advertisement.views import AdvertisementAPIView
 from user.views import RegisterUserView, ActivationView
@@ -32,9 +32,10 @@ router.register('advertisement', AdvertisementAPIView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/token/', TokenObtainPairView.as_view()),
-    path('api/token/refresh/', TokenRefreshView.as_view()),
-    path('api/token/verify/', TokenVerifyView.as_view()),
+    path('api/token/', TokenObtainPairView.as_view(), name='login'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='verify'),
+    path('api/logout/', TokenBlacklistView.as_view(), name='logout'),
 
     path('api/register/', RegisterUserView.as_view(), name='register'),
     path('api/activation/<str:code>/', ActivationView.as_view(), name='activate'),
