@@ -37,7 +37,7 @@ class AdsCommentSerializer(serializers.ModelSerializer):
 class AdvertisementListSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
     modified_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
-    deleted_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
+    disable_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
     city = serializers.CharField(source='city.name', read_only=True)
     child_category = serializers.CharField(source='child_category.name', read_only=True)
     owner = serializers.CharField(source='owner.email', read_only=True)
@@ -63,7 +63,7 @@ class AdvertisementListSerializer(serializers.ModelSerializer):
             'type',
             'created_at',
             'modified_at',
-            'deleted_at',
+            'disable_date',
             'city',
             'child_category',
             'owner',
