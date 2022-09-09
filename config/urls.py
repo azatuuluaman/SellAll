@@ -22,7 +22,6 @@ from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView, TokenBlacklistView
 
 from advertisement.views import AdvertisementAPIView
-from user.views import RegisterUserView, ActivationView
 from .swagger_config import urlpatterns as swg
 
 
@@ -32,17 +31,15 @@ router.register('advertisement', AdvertisementAPIView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/token/', TokenObtainPairView.as_view(), name='login'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='refresh'),
-    path('api/token/verify/', TokenVerifyView.as_view(), name='verify'),
-    path('api/logout/', TokenBlacklistView.as_view(), name='logout'),
+    path('api/v1/token/', TokenObtainPairView.as_view(), name='login'),
+    path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='refresh'),
+    path('api/v1/token/verify/', TokenVerifyView.as_view(), name='verify'),
+    path('api/v1/logout/', TokenBlacklistView.as_view(), name='logout'),
 
-    path('api/register/', RegisterUserView.as_view(), name='register'),
-    path('api/activation/<str:code>/', ActivationView.as_view(), name='activate'),
-
-    path('api/', include(router.urls), name='api'),
-    path('api/', include('siteapp.urls')),
-    path('api/', include('advertisement.urls')),
+    path('api/v1/', include(router.urls), name='api'),
+    path('api/v1/user/', include('user.urls')),
+    path('api/v1/site/', include('siteapp.urls')),
+    path('api/v1/advertisement/', include('advertisement.urls')),
 
 ]
 
