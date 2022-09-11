@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 from cloudinary.models import CloudinaryField
@@ -18,13 +19,9 @@ class Site(models.Model):
 
 
 class SocialMedia(models.Model):
-    class Type(models.TextChoices):
-        SOCIAL_NETWORK = 'Social Networks', 'Social Networks'
-        APP = 'App', 'App'
-
     name = models.CharField('Название', max_length=100)
     image = CloudinaryField('Изображение')
-    type = models.CharField('Тип', max_length=20, choices=Type.choices, default=Type.SOCIAL_NETWORK)
+    type = models.CharField('Тип', max_length=20, choices=settings.SOCIAL_MEDIA, default=settings.SOCIAL_NETWORK)
     link = models.CharField('Ссылка', max_length=100)
     site = models.ForeignKey(Site, verbose_name='Сайт', on_delete=models.DO_NOTHING)
 
@@ -37,13 +34,9 @@ class SocialMedia(models.Model):
 
 
 class FeedBack(models.Model):
-    class Subject(models.TextChoices):
-        CLAIM = 'Жалоба', 'Жалоба'
-        OFFER = 'Предложение', 'Предложение'
-
     name = models.CharField('Имя', max_length=100)
     email = models.EmailField()
-    subject = models.CharField('Тема сообщения', max_length=20, choices=Subject.choices, default=Subject.CLAIM)
+    subject = models.CharField('Тема сообщения', max_length=20, choices=settings.SUBJECT, default=settings.CLAIM)
     text = models.TextField('Сообщение', max_length=5000)
     send_date = models.DateTimeField('Дата отправки', auto_now_add=True)
     check_date = models.DateTimeField('Дата проверки', null=True, blank=True)

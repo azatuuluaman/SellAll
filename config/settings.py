@@ -382,3 +382,31 @@ PUSHER_KEY = os.getenv('PUSHER_KEY')
 PUSHER_SECRET = os.getenv('PUSHER_SECRET')
 PUSHER_CLUSTER = os.getenv('PUSHER_CLUSTER')
 PUSHER_SSL = bool(os.getenv('PUSHER_SSL'))
+
+# Advertisement choices
+ACTIVE = 'Активный'
+CHECKING = 'На проверке'
+DISABLE = 'Неактивный'
+
+ADS_CHOICES = (
+    (ACTIVE, ACTIVE),
+    (CHECKING, CHECKING),
+    (DISABLE, DISABLE)
+)
+
+# SiteApp choices
+SOCIAL_NETWORK = 'Social Networks'
+APP = 'App'
+
+SOCIAL_MEDIA = (
+    (SOCIAL_NETWORK, SOCIAL_NETWORK),
+    (APP, APP)
+)
+
+CLAIM = 'Жалоба'
+OFFER = 'Предложение'
+
+SUBJECT = (
+    (CLAIM, CLAIM),
+    (OFFER, OFFER)
+)
