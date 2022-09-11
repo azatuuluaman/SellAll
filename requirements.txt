@@ -13,3 +13,4 @@ cloudinary==1.29.0
 django-phonenumbers==1.0.1
 django-phonenumber-field==6.4.0
 django-redis==5.2.0
+pusher==3.2.0

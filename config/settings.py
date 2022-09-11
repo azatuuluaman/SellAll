@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',
     'advertisement.apps.AdvertisementConfig',
     'siteapp.apps.SiteAppConfig',
+    'chat.apps.ChatConfig',
 
 ]
 
@@ -170,6 +171,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
+    "DATE_INPUT_FORMATS": ["%d.%m.%Y"],
+    'DATETIME_FORMAT': "%Y.%m.%d %H:%M:%S",
 }
 
 SWAGGER_SETTINGS = {
@@ -352,6 +355,7 @@ JAZZMIN_SETTINGS = {
     # "language_chooser": True,
 }
 
+# Email config
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = os.getenv('EMAIL_PORT')
@@ -359,6 +363,7 @@ EMAIL_HOST_USER = os.getenv('EMAIL_LOGIN')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
 EMAIL_USE_TLS = True
 
+# Cloudinary config
 cloudinary.config(
     cloud_name=os.getenv('CLOUD_NAME'),
     api_key=os.getenv('CLOUD_API_KEY'),
@@ -367,5 +372,13 @@ cloudinary.config(
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+# Redis config
 REDIS_HOST = os.getenv('REDIS_HOST')
 REDIS_PORT = os.getenv('REDIS_PORT')
+
+# Pusher config
+PUSHER_APP_ID = os.getenv('PUSHER_APP_ID')
+PUSHER_KEY = os.getenv('PUSHER_KEY')
+PUSHER_SECRET = os.getenv('PUSHER_SECRET')
+PUSHER_CLUSTER = os.getenv('PUSHER_CLUSTER')
+PUSHER_SSL = os.getenv('PUSHER_SSL')

@@ -39,9 +39,6 @@ class AdsCommentSerializer(serializers.ModelSerializer):
 class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     views_count = serializers.SerializerMethodField()
     phone_view_count = serializers.SerializerMethodField()
-    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
-    modified_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
-    disable_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
     city = serializers.CharField(source='city.name', read_only=True)
     child_category = serializers.CharField(source='child_category.name', read_only=True)
     owner = serializers.CharField(source='owner.email', read_only=True)

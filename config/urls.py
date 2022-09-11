@@ -40,6 +40,7 @@ urlpatterns = [
     path('api/v1/user/', include('user.urls')),
     path('api/v1/site/', include('siteapp.urls')),
     path('api/v1/advertisement/', include('advertisement.urls')),
+    path('api/v1/chat/', include('chat.urls')),
 
 ]
 
