@@ -1,9 +1,7 @@
-import json
-
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework import viewsets, generics, status
+from rest_framework import viewsets, generics, status, views
 from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBackend
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,12 +10,13 @@ from .permissions import IsOwnerOrSuperUser, IsAuthorComment
 
 from .serializers import (
     AdvertisementSerializer,
-    AdvertisementListSerializer,
+    AdvertisementRetrieveSerializer,
     CitySerializer,
     CategorySerializer,
     ChildCategorySerializer,
     AdsSubscriberSerializer,
-    ViewStatisticSerializer, AdsCommentSerializer, CategoryDetailSerializer
+    AdsCommentSerializer,
+    CategoryDetailSerializer
 )
 
 from .models import (
@@ -26,7 +25,7 @@ from .models import (
     Advertisement,
     AdsSubscriber,
     City,
-    ViewStatistic, AdsComment
+    AdsComment
 )
 from .utils import Redis, get_client_ip
 
@@ -67,11 +66,8 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
     def get_serializer_class(self, *args, **kwargs):
         serializer_class = AdvertisementSerializer
 
-        if self.action == 'list':
-            serializer_class = AdvertisementListSerializer
-
-        if self.action == 'retrieve':
-            serializer_class = AdvertisementListSerializer
+        if self.action in ['list', 'retrieve']:
+            serializer_class = AdvertisementRetrieveSerializer
 
         return serializer_class
 
@@ -98,7 +94,7 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
         date = timezone.now().date().strftime('%d.%m.%Y')
         client_ip = get_client_ip(request)
 
-        redis.add_view(ads_id, date, client_ip)
+        redis.add_views(ads_id, date, client_ip)
 
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
@@ -150,25 +146,6 @@ class AdsSubscriberAPIView(generics.ListAPIView):
     queryset = AdsSubscriber.objects.all()
 
 
-class ViewStatisticAPIView(generics.GenericAPIView):
-    serializer_class = ViewStatisticSerializer
-    queryset = ViewStatistic.objects.all()
-
-    def get_queryset(self):
-        return ViewStatistic.objects.filter(advertisement=self.kwargs.get('pk'))
-
-    def get(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-
 class AdsCommentCreateView(generics.CreateAPIView):
     serializer_class = AdsCommentSerializer
     permission_classes = [IsAuthenticated]
@@ -178,3 +155,32 @@ class AdsCommentRUDView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AdsCommentSerializer
     queryset = AdsComment.objects.all()
     permission_classes = [IsAuthorComment]
+
+
+class AddPhoneView(views.APIView):
+    def get(self, request, *args, **kwargs):
+        ads_id = self.kwargs.get('pk')
+        ads = Advertisement.objects.filter(pk=ads_id).exists()
+
+        if not ads:
+            return Response({'message': 'Advertisement not found!'}, status=status.HTTP_400_BAD_REQUEST)
+
+        redis = Redis()
+        date = timezone.now().date().strftime('%d.%m.%Y')
+        client_ip = get_client_ip(request)
+        redis.add_phone_views(ads_id, date, client_ip)
+
+        return Response({'message': 'Success'}, status=status.HTTP_200_OK)
+
+
+class StatisticsView(views.APIView):
+    def get(self, request, *args, **kwargs):
+        ads_id = self.kwargs['pk']
+        ads = Advertisement.objects.filter(pk=ads_id).exists()
+
+        if not ads:
+            return Response({'message': 'Advertisement not found!'}, status=status.HTTP_400_BAD_REQUEST)
+
+        redis = Redis()
+        data = redis.get_ads_data(ads_id)
+        return Response(data, status=status.HTTP_200_OK)

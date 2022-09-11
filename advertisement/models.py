@@ -129,20 +129,6 @@ class AdsImage(models.Model):
         verbose_name_plural = 'Изображения объявлений'
 
 
-class ViewStatistic(models.Model):
-    views_count = models.PositiveIntegerField('Число просмотров')
-    contact_view_count = models.PositiveIntegerField('Статистика просмотров контактов')
-    date = models.DateField('Дата', auto_now=True)
-    advertisement = models.ForeignKey(Advertisement, on_delete=models.DO_NOTHING, verbose_name='Объявление')
-
-    def __str__(self):
-        return self.advertisement.name
-
-    class Meta:
-        verbose_name = 'Статистика'
-        verbose_name_plural = 'Статистика'
-
-
 class Favorites(models.Model):
     advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE,
                                       verbose_name='Объявление', related_name='favorites')

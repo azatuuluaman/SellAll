@@ -8,7 +8,6 @@ from .models import (
     AdsSubscriber,
     AdsImage,
     City,
-    ViewStatistic,
     Subscription, AdsComment
 )
 
@@ -78,14 +77,6 @@ class AdsSubscriberAdmin(admin.ModelAdmin):
 class CityAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     list_display_links = ('id', 'name')
-
-
-@admin.register(ViewStatistic)
-class ViewStatisticAdmin(admin.ModelAdmin):
-    list_display = ('advertisement', 'views_count', 'contact_view_count', 'date')
-    list_display_links = ('advertisement',)
-    list_filter = ('advertisement', 'date')
-    search_fields = ('advertisement', 'date')
 
 
 @admin.register(AdsImage)

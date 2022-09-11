@@ -7,7 +7,7 @@ class Site(models.Model):
     name = models.CharField('Название сайта', max_length=100)
     logo = CloudinaryField('Логотип')
     privacy_policy_text = models.TextField('Политика конфиденциальности текст', max_length=5000)
-    copyright = models.CharField('Авторские права', max_length=20)
+    copyright = models.CharField('Авторские права', max_length=100)
 
     def __str__(self):
         return self.name
@@ -80,3 +80,4 @@ class Help(models.Model):
     class Meta:
         verbose_name = 'Помощь'
         verbose_name_plural = 'Помощь'
+

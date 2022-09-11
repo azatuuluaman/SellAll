@@ -26,7 +26,7 @@ from .swagger_config import urlpatterns as swg
 
 
 router = routers.DefaultRouter()
-router.register('advertisement', AdvertisementAPIView)
+router.register('advertisement/ads', AdvertisementAPIView)
 
 
 urlpatterns = [

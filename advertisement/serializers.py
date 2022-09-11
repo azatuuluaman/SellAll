@@ -1,3 +1,5 @@
+from abc import ABC
+
 from rest_framework import serializers
 
 from .models import (
@@ -7,9 +9,9 @@ from .models import (
     AdsSubscriber,
     AdsImage,
     City,
-    ViewStatistic,
     AdsComment
 )
+from .utils import Redis
 
 
 class AdsImageListSerializer(serializers.ModelSerializer):
@@ -34,7 +36,9 @@ class AdsCommentSerializer(serializers.ModelSerializer):
         fields = ('user', 'advertisement', 'text', 'parent', 'children')
 
 
-class AdvertisementListSerializer(serializers.ModelSerializer):
+class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
+    views_count = serializers.SerializerMethodField()
+    phone_view_count = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
     modified_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
     disable_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
@@ -47,6 +51,16 @@ class AdvertisementListSerializer(serializers.ModelSerializer):
     def get_comments(self, obj):
         instance = AdsComment.objects.filter(advertisement=obj, parent__isnull=True)
         return AdsCommentSerializer(instance, many=True).data
+
+    def get_views_count(self, obj):
+        redis = Redis()
+        data = redis.get_ads_data(obj.pk)
+        return data['views_count']
+
+    def get_phone_view_count(self, obj):
+        redis = Redis()
+        data = redis.get_ads_data(obj.pk)
+        return data['phone_view_count']
 
     class Meta:
         model = Advertisement
@@ -61,6 +75,8 @@ class AdvertisementListSerializer(serializers.ModelSerializer):
             'phone_numbers',
             'whatsapp_number',
             'type',
+            'views_count',
+            'phone_view_count',
             'created_at',
             'modified_at',
             'disable_date',
@@ -85,16 +101,12 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         Check that the start is before the stop.
         """
         images = self.context.get('images')
-        # phone_numbers = self.context.get('phone_numbers')
         price = data.get('price')
         max_price = data.get('max_price')
 
         if max_price:
             if price >= max_price:
                 raise serializers.ValidationError({"max_price": "max_price can't be losses or equal than price!"})
-
-        # if len(phone_numbers) < 1:
-        #     raise serializers.ValidationError({"phone_numbers": "Phone number can't be less 1!"})
 
         if len(images) > 8:
             raise serializers.ValidationError({"images": "Images count can't be more 8!"})
@@ -170,12 +182,6 @@ class AdsSubscriberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AdsSubscriber
-        fields = '__all__'
-
-
-class ViewStatisticSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ViewStatistic
         fields = '__all__'
 
 
