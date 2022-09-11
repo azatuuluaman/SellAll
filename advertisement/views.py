@@ -1,3 +1,6 @@
+import json
+
+from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import viewsets, generics, status
@@ -25,6 +28,7 @@ from .models import (
     City,
     ViewStatistic, AdsComment
 )
+from .utils import Redis, get_client_ip
 
 
 class AdvertisementPriceFilterBackend(BaseFilterBackend):
@@ -89,6 +93,13 @@ class AdvertisementAPIView(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
+        redis = Redis()
+        ads_id = instance.pk
+        date = timezone.now().date().strftime('%d.%m.%Y')
+        client_ip = get_client_ip(request)
+
+        redis.add_view(ads_id, date, client_ip)
+
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 

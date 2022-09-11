@@ -366,3 +366,6 @@ cloudinary.config(
 )
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+REDIS_HOST = os.getenv('REDIS_HOST')
+REDIS_PORT = os.getenv('REDIS_PORT')
