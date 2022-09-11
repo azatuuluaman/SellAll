@@ -1,16 +1,15 @@
+import random
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth import password_validation
 
 from rest_framework import serializers
 
+from advertisement.utils import Redis
 from .models import User
 from .utils import send_activation_mail
 
 User = get_user_model()
-
-
-class ActivationSerializer(serializers.Serializer):
-    activation_code = serializers.CharField(max_length=10)
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -36,8 +35,12 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
-        user.create_activation_code()
-        send_activation_mail(user.email, user.activation_code, self.context['request'])
+        activation_code = random.randint(1000, 9999)
+        redis = Redis()
+        key = f'activate_code_{activation_code}'
+        redis.conn.set(key, user.pk)
+        redis.conn.expire(key, 3600)
+        send_activation_mail(user.email, activation_code)
         return user
 
     class Meta:

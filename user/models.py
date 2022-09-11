@@ -24,8 +24,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
-    activation_code = models.CharField(max_length=8, blank=True)
-
     USERNAME_FIELD = 'email'
 
     REQUIRED_FIELDS = (
@@ -39,13 +37,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def has_perm(self, perm, obj=None):
         return self.is_superuser
-
-    def create_activation_code(self):
-        code = get_random_string(8)
-        if User.objects.filter(activation_code=code).exists():
-            self.create_activation_code()
-        self.activation_code = code
-        self.save(update_fields=['activation_code'])
 
     class Meta:
         verbose_name = 'Пользователь'
