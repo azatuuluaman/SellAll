@@ -50,9 +50,9 @@ class Advertisement(models.Model):
     price = models.PositiveIntegerField('Цена')
     max_price = models.PositiveIntegerField('Цена до', null=True, blank=True)
     description = models.TextField('Ваше сообщение', max_length=4000)
-    city = models.ForeignKey(City, on_delete=models.SET_NULL, blank=True, null=True)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True)
     email = models.EmailField('E-mail', null=True)
-    phone_numbers = ArrayField(PhoneNumberField('Номер телефона'), size=8)
+    phone_numbers = ArrayField(PhoneNumberField('Номер телефона'), size=8, null=True, blank=True)
     whatsapp_number = PhoneNumberField('W/A номер')
 
     type = models.CharField('Статус объявления', max_length=20,
@@ -75,7 +75,7 @@ class Advertisement(models.Model):
         else:
             self.disable_date = None
 
-        self.slug = slugify(f'{self.name}-{self.owner.pk}')
+        self.slug = slugify(f'{self.name}-{self.owner.pk}', allow_unicode=True)
 
         super().save(*args, **kwargs)
 
