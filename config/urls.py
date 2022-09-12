@@ -18,15 +18,9 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView, TokenBlacklistView
 
-from advertisement.views import AdvertisementAPIView
 from .swagger_config import urlpatterns as swg
-
-
-router = routers.DefaultRouter()
-router.register('advertisement/ads', AdvertisementAPIView)
 
 
 urlpatterns = [
@@ -36,7 +30,6 @@ urlpatterns = [
     path('api/v1/token/verify/', TokenVerifyView.as_view(), name='verify'),
     path('api/v1/logout/', TokenBlacklistView.as_view(), name='logout'),
 
-    path('api/v1/', include(router.urls), name='api'),
     path('api/v1/user/', include('user.urls')),
     path('api/v1/site/', include('siteapp.urls')),
     path('api/v1/advertisement/', include('advertisement.urls')),

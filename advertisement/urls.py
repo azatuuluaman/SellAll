@@ -1,6 +1,9 @@
 from django.urls import path
 
 from .views import (
+    AdvertisementCreateView,
+    AdvertisementListView,
+    AdvertisementRUDView,
     CategoryAPIView,
     CityAPIView,
     ChildCategoryAPIView,
@@ -9,10 +12,13 @@ from .views import (
     AdsCommentRUDView,
     CategoryRetrieveAPIView,
     AddPhoneView,
-    StatisticsView
+    StatisticsView,
 )
 
 urlpatterns = [
+    path('create/', AdvertisementCreateView.as_view(), name='ads_create'),
+    path('list/', AdvertisementListView.as_view(), name='ads_list'),
+    path('<int:pk>/', AdvertisementRUDView.as_view(), name='advertisement'),
     path('categories/', CategoryAPIView.as_view(), name='categories'),
     path('category/<int:pk>/', CategoryRetrieveAPIView.as_view(), name='category'),
     path('child-categories/', ChildCategoryAPIView.as_view(), name='child_categories'),

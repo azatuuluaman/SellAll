@@ -70,7 +70,7 @@ class Advertisement(models.Model):
 
     def save(self, *args, **kwargs):
         # Проверка на удаление
-        if self.type == self.Type.DISABLE:
+        if self.type == settings.DISABLE:
             self.disable_date = timezone.now()
         else:
             self.disable_date = None
