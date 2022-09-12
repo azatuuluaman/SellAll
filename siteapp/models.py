@@ -23,7 +23,7 @@ class SocialMedia(models.Model):
     image = CloudinaryField('Изображение')
     type = models.CharField('Тип', max_length=20, choices=settings.SOCIAL_MEDIA, default=settings.SOCIAL_NETWORK)
     link = models.CharField('Ссылка', max_length=100)
-    site = models.ForeignKey(Site, verbose_name='Сайт', on_delete=models.DO_NOTHING)
+    site = models.ForeignKey(Site, verbose_name='Сайт', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.name
@@ -64,8 +64,8 @@ class HelpCategory(models.Model):
 class Help(models.Model):
     title = models.CharField('Загаловок', max_length=100)
     text = models.TextField('Текст', max_length=5000)
-    category = models.ForeignKey(HelpCategory, on_delete=models.DO_NOTHING, related_name='help',
-                                 verbose_name='Категория')
+    category = models.ForeignKey(HelpCategory, on_delete=models.SET_NULL, related_name='help',
+                                 verbose_name='Категория', null=True)
 
     def __str__(self):
         return self.title
