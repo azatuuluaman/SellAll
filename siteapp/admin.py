@@ -1,7 +1,18 @@
 from django.contrib import admin
-from .models import Site, SocialMedia, FeedBack, Help, HelpCategory
 
 from django.utils.safestring import mark_safe
+from django import forms
+
+from ckeditor.widgets import CKEditorWidget
+from .models import Site, SocialMedia, FeedBack, Help, HelpCategory
+
+
+class HelpAdminForm(forms.ModelForm):
+    text = forms.CharField(widget=CKEditorWidget())
+
+    class Meta:
+        model = Help
+        fields = '__all__'
 
 
 @admin.register(Site)
@@ -51,6 +62,7 @@ class HelpAdmin(admin.ModelAdmin):
     """
     list_display = ('title', 'text')
     list_display_links = ('title',)
+    form = HelpAdminForm
 
 
 @admin.register(HelpCategory)

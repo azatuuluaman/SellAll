@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
     # Frameworks
     'corsheaders',
+    'ckeditor',
     'drf_yasg',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -411,3 +412,16 @@ SUBJECT = (
     (CLAIM, CLAIM),
     (OFFER, OFFER)
 )
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter',
+             'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink'],
+            ['RemoveFormat', 'Source']
+        ]
+    }
+}
