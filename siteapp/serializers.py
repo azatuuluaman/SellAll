@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from advertisement.models import Category, City
 from .models import Site, SocialMedia, FeedBack, Help, HelpCategory
 
 
@@ -16,6 +18,10 @@ class SocialMediaSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialMedia
         fields = '__all__'
+
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
 
 
 class FeedBackSerializer(serializers.ModelSerializer):
@@ -40,3 +46,38 @@ class HelpCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = HelpCategory
         fields = ('id', 'name', 'help')
+
+
+# class FooterCategorySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Category
+#         fields = ('id', 'name')
+#
+#     def to_representation(self, value):
+#         serializer = self.parent.parent.__class__(value, context=self.context)
+#         return serializer.data
+
+
+# class FooterCitySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = City
+#         fields = ('id', 'name')
+#
+#     def to_representation(self, value):
+#         serializer = self.parent.parent.__class__(value, context=self.context)
+#         return serializer.data
+
+
+# class FooterSerializer(serializers.Serializer):
+#     category = FooterCategorySerializer(many=True, read_only=True)
+#     city = FooterCitySerializer(many=True, read_only=True)
+#     app = SocialMediaSerializer(many=True, read_only=True)
+#     network = SocialMediaSerializer(many=True, read_only=True)
+#
+#     class Meta:
+#         fields = (
+#             'category',
+#             'city',
+#             'app',
+#             'network',
+#         )
