@@ -12,7 +12,7 @@ from rest_framework.decorators import action
 
 from drf_yasg.utils import swagger_auto_schema
 
-from .swagger_scheme import child_category_id, has_image, price, max_price
+from .swagger_scheme import category_id, has_image, price, max_price
 from .permissions import IsOwnerOrSuperUser, IsAuthorComment
 
 from .serializers import (
@@ -43,14 +43,15 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, view):
-        child_category_id = request.query_params.get('child_category_id')
+        category_id = request.query_params.get('category_id')
         price = request.query_params.get('price')
         max_price = request.query_params.get('max_price')
         has_image = request.query_params.get('has_image')
         filters = {}
 
-        if child_category_id:
-            filters['child_category'] = child_category_id
+        if category_id:
+            filters['child_category__category_id'] = category_id
+
         if has_image == 'True':
             filters['images__isnull'] = False
 
@@ -91,6 +92,7 @@ class AdvertisementCreateView(generics.CreateAPIView):
 
 
 class AdvertisementRUDView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Advertisement.objects.all()
     serializer_class = AdvertisementRetrieveSerializer
     permission_classes = [IsOwnerOrSuperUser]
 
@@ -107,24 +109,16 @@ class AdvertisementRUDView(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def get_object(self):
-        ads_pk = self.kwargs['pk']
-        obj = get_object_or_404(Advertisement, pk=ads_pk)
-
-        self.check_object_permissions(self.request, obj)
-
-        return obj
-
 
 class AdvertisementListView(generics.ListAPIView):
     serializer_class = AdvertisementRetrieveSerializer
     permission_classes = [AllowAny]
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter, AdvertisementCustomFilterBackend)
-    filterset_fields = ('city', 'disable_date')
+    filterset_fields = ('child_category_id', 'city', 'disable_date')
     search_fields = ('name',)
     ordering_fields = ('created_at', 'price')
 
-    @swagger_auto_schema(method='get', manual_parameters=[child_category_id, has_image, price, max_price])
+    @swagger_auto_schema(method='get', manual_parameters=[category_id, has_image, price, max_price])
     @action(['get'], detail=False)
     def get(self, request, *args, **kwargs):
         return super(AdvertisementListView, self).get(request)

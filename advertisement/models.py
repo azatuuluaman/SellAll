@@ -75,7 +75,8 @@ class Advertisement(models.Model):
         else:
             self.disable_date = None
 
-        self.slug = slugify(f'{self.name}-{self.owner.pk}', allow_unicode=True)
+        if self._state.adding:
+            self.slug = slugify(f'{self.name}-{self.owner.pk}', allow_unicode=True)
 
         super().save(*args, **kwargs)
 

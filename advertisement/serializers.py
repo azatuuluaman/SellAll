@@ -3,7 +3,6 @@ from django.utils import timezone
 
 from rest_framework import serializers
 
-
 from .models import (
     Category,
     ChildCategory,
@@ -55,12 +54,12 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     owner = serializers.CharField(source='owner.email', read_only=True)
     images = AdsImageListSerializer(many=True, read_only=True)
     comments = serializers.SerializerMethodField(read_only=True)
-    # subscribtions = serializers.SerializerMethodField(read_only=True)
+    subscribtions = serializers.SerializerMethodField(read_only=True)
 
-    # def get_subscribtions(self, obj):
-        # timezone.now()
-
-        # instance = AdsSubscriber.objects.filter(advertisement=obj, Q(start_date__gte=))
+    def get_subscribtions(self, obj):
+        date = timezone.now()
+        instance = AdsSubscriber.objects.filter(Q(start_date__gte=date) & Q(end_date__lte=date), advertisement=obj)
+        return AdsSubscriberSerializer(instance, many=True).data
 
     def get_comments(self, obj):
         instance = AdsComment.objects.filter(advertisement=obj, parent__isnull=True)
@@ -96,6 +95,7 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
             'disable_date',
             'city',
             'child_category',
+            'subscribtions',
             'owner',
             'images',
             'comments'
