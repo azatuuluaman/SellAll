@@ -1,4 +1,8 @@
+from django.db.models import Q
+from django.utils import timezone
+
 from rest_framework import serializers
+
 
 from .models import (
     Category,
@@ -34,6 +38,15 @@ class AdsCommentSerializer(serializers.ModelSerializer):
         fields = ('user', 'advertisement', 'text', 'parent', 'children')
 
 
+class AdsSubscriberSerializer(serializers.ModelSerializer):
+    advertisement = serializers.CharField(source='advertisement.name')
+    subscription = serializers.CharField(source='subscription.name')
+
+    class Meta:
+        model = AdsSubscriber
+        fields = '__all__'
+
+
 class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     views_count = serializers.SerializerMethodField()
     phone_view_count = serializers.SerializerMethodField()
@@ -42,6 +55,12 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     owner = serializers.CharField(source='owner.email', read_only=True)
     images = AdsImageListSerializer(many=True, read_only=True)
     comments = serializers.SerializerMethodField(read_only=True)
+    # subscribtions = serializers.SerializerMethodField(read_only=True)
+
+    # def get_subscribtions(self, obj):
+        # timezone.now()
+
+        # instance = AdsSubscriber.objects.filter(advertisement=obj, Q(start_date__gte=))
 
     def get_comments(self, obj):
         instance = AdsComment.objects.filter(advertisement=obj, parent__isnull=True)
@@ -169,15 +188,6 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
     def get_icon(self, obj):
         return obj.icon.url
-
-
-class AdsSubscriberSerializer(serializers.ModelSerializer):
-    advertisement = serializers.CharField(source='advertisement.name')
-    subscription = serializers.CharField(source='subscription.name')
-
-    class Meta:
-        model = AdsSubscriber
-        fields = '__all__'
 
 
 class CitySerializer(serializers.ModelSerializer):

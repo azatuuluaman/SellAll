@@ -1,15 +1,15 @@
 from django.contrib.auth import get_user_model
 
-from rest_framework import generics, status
+from rest_framework import generics, status, views
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
 
 from advertisement.utils import Redis
-from .serializers import UserRegisterSerializer
+from .serializers import UserRegisterSerializer, UserSerializer
 
 User = get_user_model()
 
@@ -26,7 +26,7 @@ class RegisterUserView(generics.GenericAPIView):
         return Response('Пользователь успешно зарегистрирован', status=status.HTTP_201_CREATED)
 
 
-class UserActivationView(APIView):
+class UserActivationView(views.APIView):
     @swagger_auto_schema(method='post', request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
@@ -68,3 +68,11 @@ class UserActivationView(APIView):
         redis.conn.delete(key)
 
         return Response({"message": "Активация прошла успешно!"}, status=status.HTTP_200_OK)
+
+
+class UserAPIVIew(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

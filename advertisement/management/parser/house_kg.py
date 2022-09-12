@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from django.utils.text import slugify
 
 from advertisement.models import Advertisement
+from config import settings
 from user.models import User
 
 headers = {
@@ -54,6 +55,6 @@ def main_house():
 
             Advertisement.objects.create(name=advertisement_name, price=advertisement_price,
                                          whatsapp_number=advertisement_number, owner=ads_owner,
-                                         description=advertisement_description)
+                                         description=advertisement_description, type=settings.ACTIVE)
         except AttributeError:
             pass
