@@ -34,6 +34,9 @@ class Redis:
         else:
             data = self.decode_data(byte_data)
 
+        if not data.get(date):
+            data[date] = self.get_base_data()
+
         return data
 
     def check_date(self, decoded_data, date) -> bool:
@@ -52,10 +55,17 @@ class Redis:
         if client_ip in decoded_data['clients_ip']:
             return True
         return False
+    def check_phone_ip(self, decoded_data, client_ip) -> bool:
+        """
+        Check client ip in phone view redis
+        """
+        if client_ip in decoded_data['phone_client_ip']:
+            return True
+        return False
 
     def check_data(self, decoded_data, date, client_ip) -> bool:
         """
-        Check date by date and client ip
+        Check data by date and client ip
         Check client ip already exists or no
         """
         if not self.check_date(decoded_data, date):
@@ -66,23 +76,41 @@ class Redis:
 
         return True
 
-    def get_base_structure(self, date):
+    def check_phone_data(self, decoded_data, date, client_ip) -> bool:
         """
-        Base structure for advertisement views
+        Check phone_data by date and client ip
         """
-        base_data = {
-            date: {
-                'clients_ip': [],
-                'phone_client_ip': [],
-                'phone_views_count': 0,
-                'views_count': 0
-            },
+        if not self.check_date(decoded_data, date):
+            return False
+
+        if not self.check_phone_ip(decoded_data, client_ip):
+            return False
+
+        return True
+
+    def get_base_data(self):
+        data = {
             'clients_ip': [],
             'phone_client_ip': [],
             'phone_views_count': 0,
             'views_count': 0
         }
-        return base_data
+        return data
+
+    def get_base_structure(self, date):
+        """
+        Base structure for advertisement views
+        """
+        base_data = self.get_base_data()
+
+        base_data_structure = {
+            date: base_data,
+            'clients_ip': [],
+            'phone_client_ip': [],
+            'phone_views_count': 0,
+            'views_count': 0
+        }
+        return base_data_structure
 
     def add_views(self, ads_id, date, client_ip) -> None:
         """
@@ -104,7 +132,7 @@ class Redis:
         """
         data = self.get_data(ads_id, date)
 
-        if not self.check_data(data, date, client_ip):
+        if not self.check_phone_data(data, date, client_ip):
             data[date]['phone_client_ip'].append(client_ip)
             data[date]['phone_views_count'] += 1
 

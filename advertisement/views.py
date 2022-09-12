@@ -94,6 +94,19 @@ class AdvertisementRUDView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AdvertisementRetrieveSerializer
     permission_classes = [IsOwnerOrSuperUser]
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        redis = Redis()
+        ads_id = instance.pk
+        date = timezone.now().date().strftime('%d.%m.%Y')
+        client_ip = get_client_ip(request)
+
+        redis.add_views(ads_id, date, client_ip)
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def get_object(self):
         ads_pk = self.kwargs['pk']
         obj = get_object_or_404(Advertisement, pk=ads_pk)
