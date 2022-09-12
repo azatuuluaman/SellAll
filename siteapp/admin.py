@@ -20,11 +20,12 @@ class SiteAdmin(admin.ModelAdmin):
     """
     Админ панель "Информация сайта"
     """
-    list_display = ('name', 'logo', 'privacy_policy_text', 'copyright')
-    list_display_links = ('name', 'logo')
+    list_display = ('name', 'get_site_logo', 'privacy_policy_text', 'copyright')
+    list_display_links = ('name', 'get_site_logo')
+    readonly_fields = ('get_site_logo',)
 
     def get_site_logo(self, obj):
-        return mark_safe(f"<img src={obj.logo.url}>") if obj.logo else '-'
+        return mark_safe(f"<img width=250px height=250px src={obj.logo.url}>") if obj.logo else '-'
 
     get_site_logo.short_description = 'Логотип'
 
@@ -34,11 +35,12 @@ class SocialMediaAdmin(admin.ModelAdmin):
     """
     Админ панель "Информация сайта"
     """
-    list_display = ('name', 'image', 'type', 'link')
-    list_display_links = ('name', 'image')
+    list_display = ('name', 'get_site_logo', 'type', 'link')
+    list_display_links = ('name', 'get_site_logo')
+    readonly_fields = ('get_site_logo',)
 
     def get_site_logo(self, obj):
-        return mark_safe(f"<img src={obj.image.url}>") if obj.image else '-'
+        return mark_safe(f"<img width=150 height=150px src={obj.image.url}>") if obj.image else '-'
 
     get_site_logo.short_description = 'Изображение'
 
