@@ -34,7 +34,7 @@ class Category(models.Model):
 class ChildCategory(models.Model):
     name = models.CharField('Под-категория', max_length=100)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, verbose_name='Категория',
-                                 related_name='child_categories', null=True)
+                                 related_name='child_categories', blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -50,7 +50,7 @@ class Advertisement(models.Model):
     price = models.PositiveIntegerField('Цена')
     max_price = models.PositiveIntegerField('Цена до', null=True, blank=True)
     description = models.TextField('Ваше сообщение', max_length=4000)
-    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, blank=True, null=True)
     email = models.EmailField('E-mail', null=True)
     phone_numbers = ArrayField(PhoneNumberField('Номер телефона'), size=8)
     whatsapp_number = PhoneNumberField('W/A номер')
@@ -62,8 +62,8 @@ class Advertisement(models.Model):
     modified_at = models.DateTimeField('Последняя дата изменения', auto_now=True)
     disable_date = models.DateTimeField('Неактивен с', null=True, blank=True)
 
-    child_category = models.ForeignKey(ChildCategory, on_delete=models.SET_NULL, verbose_name='Подкатегория', null=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name='Автор', null=True)
+    child_category = models.ForeignKey(ChildCategory, on_delete=models.SET_NULL, verbose_name='Подкатегория', blank=True, null=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name='Автор', blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -97,8 +97,8 @@ class Subscription(models.Model):
 
 
 class AdsSubscriber(models.Model):
-    advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, verbose_name='Объявление', null=True)
-    subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, verbose_name='Подписка', null=True)
+    advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, verbose_name='Объявление', blank=True, null=True)
+    subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, verbose_name='Подписка', blank=True, null=True)
     start_date = models.DateTimeField('Дата начала')
     end_date = models.DateTimeField('Дата окончания')
     created_at = models.DateTimeField('Дата создания', auto_now=True)
