@@ -22,18 +22,20 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .swagger_config import urlpatterns as swg
 
+API_HEAD_URL = f'api/v1'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/token/', TokenObtainPairView.as_view(), name='login'),
-    path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='refresh'),
-    path('api/v1/token/verify/', TokenVerifyView.as_view(), name='verify'),
-    path('api/v1/logout/', TokenBlacklistView.as_view(), name='logout'),
+    path(f'{API_HEAD_URL}/social-auth/', include('social_auth.urls'), name='social'),
+    path(f'{API_HEAD_URL}/token/', TokenObtainPairView.as_view(), name='login'),
+    path(f'{API_HEAD_URL}/token/refresh/', TokenRefreshView.as_view(), name='refresh'),
+    path(f'{API_HEAD_URL}/token/verify/', TokenVerifyView.as_view(), name='verify'),
+    path(f'{API_HEAD_URL}/logout/', TokenBlacklistView.as_view(), name='logout'),
 
-    path('api/v1/user/', include('user.urls')),
-    path('api/v1/site/', include('siteapp.urls')),
-    path('api/v1/advertisement/', include('advertisement.urls')),
-    path('api/v1/chat/', include('chat.urls')),
+    path(f'{API_HEAD_URL}/user/', include('user.urls')),
+    path(f'{API_HEAD_URL}/site/', include('siteapp.urls')),
+    path(f'{API_HEAD_URL}/advertisement/', include('advertisement.urls')),
+    path(f'{API_HEAD_URL}/chat/', include('chat.urls')),
 
 ]
 

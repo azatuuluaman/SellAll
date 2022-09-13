@@ -5,9 +5,7 @@ from advertisement.models import Category, ChildCategory
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        # with open(f'{settings.BASE_DIR}/advertisement/management/commands/static/icon/electronics.svg', mode='rb') as f:
-        #     category = Category.objects.create(name='Электроника', icon=File(f))
-        category = Category.objects.create(name='Электроника')
+        category = Category.objects.create(name='Электроника', icon='http://res.cloudinary.com/dnrwypf6x/image/upload/v1663055190/n4q0hacfambbhvxbclg0.svg')
         ChildCategory.objects.create(category=category, name='Телефоны и аксессуары')
         ChildCategory.objects.create(category=category, name='Фото / видео')
         ChildCategory.objects.create(category=category, name='Аудиотехника')
@@ -22,17 +20,13 @@ class Command(BaseCommand):
         ChildCategory.objects.create(category=category, name='Ремонт и обслуживание техники')
         ChildCategory.objects.create(category=category, name='Ноутбуки и аксессуары')
 
-        # with open(f'{settings.BASE_DIR}/advertisement/management/commands/static/icon/estate.svg.svg', mode='rb') as f:
-        #     category = Category.objects.create(name='Недвижимость', icon=File(f))
-        category = Category.objects.create(name='Недвижимость')
+        category = Category.objects.create(name='Недвижимость', icon='http://res.cloudinary.com/dnrwypf6x/image/upload/v1663055236/lbhs9siciaehqh0yu9zo.svg')
         ChildCategory.objects.create(category=category, name='Продажа недвижимости')
         ChildCategory.objects.create(category=category, name='Аренда недвижимости')
         ChildCategory.objects.create(category=category, name='Коммерческая недвижимость')
         ChildCategory.objects.create(category=category, name='Недвижимость за рубежом')
 
-        # with open(f'{settings.BASE_DIR}/advertisement/management/commands/static/icon/transport.svg', mode='rb') as f:
-        #     category = Category.objects.create(name='Транспорт', icon=File(f))
-        category = Category.objects.create(name='Транспорт')
+        category = Category.objects.create(name='Транспорт', icon='http://res.cloudinary.com/dnrwypf6x/image/upload/v1663055273/ynpstgtqudcxwtqqttlu.svg')
         ChildCategory.objects.create(category=category, name='Легковые автомобили')
         ChildCategory.objects.create(category=category, name='Запчасти')
         ChildCategory.objects.create(category=category, name='Прочее')
@@ -41,9 +35,7 @@ class Command(BaseCommand):
         ChildCategory.objects.create(category=category, name='Грузовики и спецтехника')
         ChildCategory.objects.create(category=category, name='Автоуслуги')
 
-        # with open(f'{settings.BASE_DIR}/advertisement/management/commands/static/icon/busines.svg', mode='rb') as f:
-        #     category = Category.objects.create(name='Бизнес и работа', icon=File(f))
-        category = Category.objects.create(name='Бизнес и работа')
+        category = Category.objects.create(name='Бизнес и работа', icon='http://res.cloudinary.com/dnrwypf6x/image/upload/v1663055307/k8kom0ohhkkda8f8dwrh.svg')
         ChildCategory.objects.create(category=category, name='Все для офиса')
         ChildCategory.objects.create(category=category, name='Оборудование')
         ChildCategory.objects.create(category=category, name='Бизнес образование')
@@ -54,9 +46,7 @@ class Command(BaseCommand):
         ChildCategory.objects.create(category=category, name='Услуги для бизнесы')
         ChildCategory.objects.create(category=category, name='Прочее')
 
-        # with open(f'{settings.BASE_DIR}/advertisement/management/commands/static/icon/dress.svg', mode='rb') as f:
-        #     category = Category.objects.create(name='Личные вещи', icon=File(f))
-        category = Category.objects.create(name='Личные вещи')
+        category = Category.objects.create(name='Личные вещи', icon='http://res.cloudinary.com/dnrwypf6x/image/upload/v1663055350/yufxovspyfudl8kwqpyb.svg')
         ChildCategory.objects.create(category=category, name='Одежда, обувь')
         ChildCategory.objects.create(category=category, name='Аксессуары')
         ChildCategory.objects.create(category=category, name='Для свадьбы')
@@ -64,8 +54,7 @@ class Command(BaseCommand):
         ChildCategory.objects.create(category=category, name='Наручные часы')
         ChildCategory.objects.create(category=category, name='Красота / здоровье')
 
-        # with open(f'{settings.BASE_DIR}/advertisement/management/commands/static/icon/animals.svg', mode='rb') as f:
-        category = Category.objects.create(name='Зверюшки')
+        category = Category.objects.create(name='Зверюшки', icon='http://res.cloudinary.com/dnrwypf6x/image/upload/v1663055377/l3gybvjxutt4yscmls7v.svg')
         ChildCategory.objects.create(category=category, name='Собаки')
         ChildCategory.objects.create(category=category, name='Кошки')
         ChildCategory.objects.create(category=category, name='Грызуны')
@@ -75,8 +64,7 @@ class Command(BaseCommand):
         ChildCategory.objects.create(category=category, name='Товары для животных')
         ChildCategory.objects.create(category=category, name='Другие животные')
 
-        # with open(f'{settings.BASE_DIR}/advertisement/management/commands/static/icon/house.svg', mode='rb') as f:
-        category = Category.objects.create(name='Дом и дача')
+        category = Category.objects.create(name='Дом и дача', icon='http://res.cloudinary.com/dnrwypf6x/image/upload/v1663055413/pjwcij6qdjm90ijc07jj.svg')
         ChildCategory.objects.create(category=category, name='Строительство / ремонт')
         ChildCategory.objects.create(category=category, name='Садовые растение')
         ChildCategory.objects.create(category=category, name='Хозяйственные инвентарь')
@@ -89,9 +77,7 @@ class Command(BaseCommand):
         ChildCategory.objects.create(category=category, name='Садоводство - прочее')
         ChildCategory.objects.create(category=category, name='Товары дома и отдыха')
 
-        # with open(f'{settings.BASE_DIR}/advertisement/management/commands/static/icon/services.svg', mode='rb') as f:
-        #     category = Category.objects.create(name='Услуги', icon=File(f))
-        category = Category.objects.create(name='Услуги')
+        category = Category.objects.create(name='Услуги', icon='http://res.cloudinary.com/dnrwypf6x/image/upload/v1663055453/n3ej0uxcn9fouovq0hii.svg')
         ChildCategory.objects.create(category=category, name='IT, интернет, телеком')
         ChildCategory.objects.create(category=category, name='Обучение, курсы')
         ChildCategory.objects.create(category=category, name='Ремонт и обслуживание техники')
@@ -104,9 +90,7 @@ class Command(BaseCommand):
         ChildCategory.objects.create(category=category, name='Туризм, иммиграция')
         ChildCategory.objects.create(category=category, name='Безопасность, детективы')
 
-        # with open(f'{settings.BASE_DIR}/advertisement/management/commands/static/icon/beach.svg', mode='rb') as f:
-        #     category = Category.objects.create(name='Отдых и спорт', icon=File(f))
-        category = Category.objects.create(name='Отдых и спорт')
+        category = Category.objects.create(name='Отдых и спорт', icon='http://res.cloudinary.com/dnrwypf6x/image/upload/v1663055486/mpe3h3vsycujrv0dremv.svg')
         ChildCategory.objects.create(category=category, name='Антиквариат, коллекции')
         ChildCategory.objects.create(category=category, name='Книги и журнали')
         ChildCategory.objects.create(category=category, name='Музыкальные инструменты')
@@ -114,9 +98,7 @@ class Command(BaseCommand):
         ChildCategory.objects.create(category=category, name='Спорт, отдых')
         ChildCategory.objects.create(category=category, name='Поиск групп, музыкантов')
 
-        # with open(f'{settings.BASE_DIR}/advertisement/management/commands/static/icon/children.svg', mode='rb') as f:
-        #     category = Category.objects.create(name='Детский мир', icon=File(f))
-        category = Category.objects.create(name='Детский мир')
+        category = Category.objects.create(name='Детский мир', icon='https://res.cloudinary.com/dnrwypf6x/image/upload/v1663055555/fjeyivkhzgmprfa1ariz.svg')
         ChildCategory.objects.create(category=category, name='Детская одежда')
         ChildCategory.objects.create(category=category, name='Детские автокресла')
         ChildCategory.objects.create(category=category, name='Детский транспорт')

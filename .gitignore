@@ -9,7 +9,7 @@ __pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media
+media/
 static/
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
@@ -248,7 +248,7 @@ fabric.properties
 # Editor-based Rest Client
 .idea/httpRequests
 
-# Android studio 3.1+ serialized cache file
+# Android studio 3.1.txt+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
 ### PyCharm Patch ###

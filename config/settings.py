@@ -15,10 +15,7 @@ import cloudinary
 from datetime import timedelta
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-# Load .env
-load_dotenv()
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,10 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
@@ -63,7 +60,7 @@ INSTALLED_APPS = [
     'advertisement.apps.AdvertisementConfig',
     'siteapp.apps.SiteAppConfig',
     'chat.apps.ChatConfig',
-
+    'social_auth.apps.SocialAuthConfig'
 ]
 
 MIDDLEWARE = [
@@ -103,11 +100,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('POSTGRES_DB'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST'),
-        'PORT': os.getenv('POSTGRES_PORT'),
+        'NAME': config('POSTGRES_DB'),
+        'USER': config('POSTGRES_USER'),
+        'PASSWORD': config('POSTGRES_PASSWORD'),
+        'HOST': config('POSTGRES_HOST'),
+        'PORT': config('POSTGRES_PORT'),
     }
 }
 
@@ -360,30 +357,30 @@ JAZZMIN_SETTINGS = {
 # Email config
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_HOST_USER = os.getenv('EMAIL_LOGIN')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_HOST_USER = config('EMAIL_LOGIN')
+EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD')
 EMAIL_USE_TLS = True
 
 # Cloudinary config
 cloudinary.config(
-    cloud_name=os.getenv('CLOUD_NAME'),
-    api_key=os.getenv('CLOUD_API_KEY'),
-    api_secret=os.getenv('CLOUD_API_SECRET')
+    cloud_name=config('CLOUD_NAME'),
+    api_key=config('CLOUD_API_KEY'),
+    api_secret=config('CLOUD_API_SECRET')
 )
 
 CORS_ORIGIN_ALLOW_ALL = True
 
 # Redis config
-REDIS_HOST = os.getenv('REDIS_HOST')
-REDIS_PORT = os.getenv('REDIS_PORT')
+REDIS_HOST = config('REDIS_HOST')
+REDIS_PORT = config('REDIS_PORT')
 
 # Pusher config
-PUSHER_APP_ID = os.getenv('PUSHER_APP_ID')
-PUSHER_KEY = os.getenv('PUSHER_KEY')
-PUSHER_SECRET = os.getenv('PUSHER_SECRET')
-PUSHER_CLUSTER = os.getenv('PUSHER_CLUSTER')
-PUSHER_SSL = bool(os.getenv('PUSHER_SSL'))
+PUSHER_APP_ID = config('PUSHER_APP_ID')
+PUSHER_KEY = config('PUSHER_KEY')
+PUSHER_SECRET = config('PUSHER_SECRET')
+PUSHER_CLUSTER = config('PUSHER_CLUSTER')
+PUSHER_SSL = bool(config('PUSHER_SSL'))
 
 # Advertisement choices
 ACTIVE = 'Активный'
@@ -413,6 +410,14 @@ SUBJECT = (
     (OFFER, OFFER)
 )
 
+GOOGLE = 'google'
+FACEBOOK = 'facebook'
+
+AUTH_TYPE = (
+    (GOOGLE, GOOGLE),
+    (FACEBOOK, FACEBOOK)
+)
+
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'Custom',
@@ -422,6 +427,8 @@ CKEDITOR_CONFIGS = {
              'JustifyRight', 'JustifyBlock'],
             ['Link', 'Unlink'],
             ['RemoveFormat', 'Source']
-        ]
+        ],
+        'width': '100%',
+
     }
 }
