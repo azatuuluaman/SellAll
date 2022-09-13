@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
@@ -16,6 +17,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField('Name', max_length=100)
     last_name = models.CharField('Surname', max_length=100)
     phone_number = PhoneNumberField('Номер телефона')
+    social_auth = models.CharField('Авторизован через: ', choices=settings.AUTH_TYPE,
+                                   max_length=20, null=True, blank=True)
 
     created = models.DateTimeField('created', auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)

@@ -62,8 +62,10 @@ class HelpAdmin(admin.ModelAdmin):
     """
     Админ панель "Раздел помощь"
     """
-    list_display = ('title', 'text')
-    list_display_links = ('title',)
+    list_display = ('title', 'category', 'text')
+    list_display_links = ('title', 'category')
+    list_filter = ('category',)
+    search_fields = ('text',)
     form = HelpAdminForm
 
 

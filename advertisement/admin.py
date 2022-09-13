@@ -14,7 +14,7 @@ from .models import (
 
 @admin.register(Advertisement)
 class AdvertisementAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'get_prices', 'created_at', 'modified_at', 'disable_date')
+    list_display = ('id', 'name', 'get_prices', 'child_category', 'created_at', 'modified_at', 'disable_date')
     list_display_links = ('id', 'name')
     list_filter = ('city', 'child_category', 'owner', 'created_at', 'modified_at', 'disable_date')
     search_fields = ('name', 'description', 'email')

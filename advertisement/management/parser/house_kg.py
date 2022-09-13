@@ -1,8 +1,10 @@
+import random
+
 import requests
 from bs4 import BeautifulSoup
 from django.utils.text import slugify
 
-from advertisement.models import Advertisement
+from advertisement.models import Advertisement, ChildCategory
 from config import settings
 from user.models import User
 
@@ -14,6 +16,9 @@ headers = {
 
 def main_house():
     all_advertisement_list = []
+    child_category = ChildCategory.objects.all()
+    print('Parsing start')
+    print('##############')
     for i in range(1, 21):
         url = f'https://www.house.kg/kupit?page={i}'
         req = requests.get(url, headers=headers)
@@ -31,6 +36,8 @@ def main_house():
 
             all_advertisement_list.append(item_href)
 
+    print('Add data to database')
+    print('##############')
     for url in all_advertisement_list:
         req = requests.get(url, headers=headers)
         src = req.text
@@ -53,8 +60,12 @@ def main_house():
             if Advertisement.objects.filter(slug=slug).exists():
                 continue
 
+            random_num = random.randint(1, child_category.count())
             Advertisement.objects.create(name=advertisement_name, price=advertisement_price,
                                          whatsapp_number=advertisement_number, owner=ads_owner,
-                                         description=advertisement_description, type=settings.ACTIVE)
+                                         description=advertisement_description, type=settings.ACTIVE,
+                                         child_category=child_category[random_num])
         except AttributeError:
             pass
+
+    print('End!')
