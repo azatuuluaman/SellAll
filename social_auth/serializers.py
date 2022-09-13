@@ -2,7 +2,7 @@ from django.conf import settings
 from rest_framework import serializers
 from decouple import config
 from . import google, facebook
-from .register import register_social_user
+from .register import login_social_user
 from rest_framework.exceptions import AuthenticationFailed
 
 
@@ -16,10 +16,14 @@ class FacebookSocialAuthSerializer(serializers.Serializer):
         try:
             email = user_data['email']
             provider = settings.FACEBOOK
-            return register_social_user(
-                provider=provider,
-                email=email,
-            )
+
+            result = login_social_user(provider=provider, email=email)
+
+            if not result:
+                return serializers.ValidationError("User already use another social")
+
+            return result
+
         except Exception as identifier:
 
             raise serializers.ValidationError(
@@ -33,18 +37,19 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
 
     def validate_auth_token(self, auth_token):
         user_data = google.Google.validate(auth_token)
-        try:
-            user_data['sub']
-        except:
-            raise serializers.ValidationError(
-                'The token is invalid or expired. Please login again.'
-            )
 
-        if user_data['aud'] != config('GOOGLE_CLIENT_ID'):
+        if not user_data.get('sub'):
+            raise serializers.ValidationError('The token is invalid or expired. Please login again.')
+
+        if user_data.get('aud') != config('GOOGLE_CLIENT_ID'):
             raise AuthenticationFailed('oops, who are you?')
 
-        email = user_data['email']
+        email = user_data.get('email')
         provider = settings.GOOGLE
 
-        return register_social_user(
-            provider=provider, email=email)
+        result = login_social_user(provider=provider, email=email)
+
+        if not result:
+            raise serializers.ValidationError("User already use another social!")
+
+        return result

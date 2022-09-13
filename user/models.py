@@ -1,10 +1,10 @@
-from django.conf import settings
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
-from django.utils.crypto import get_random_string
 
 from phonenumber_field.modelfields import PhoneNumberField
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from advertisement.models import Advertisement
 
@@ -34,6 +34,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         'last_name',
         'phone_number'
     )
+
+    def tokens(self):
+        refresh = RefreshToken.for_user(self)
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token)
+        }
 
     def has_module_perms(self, app_label):
         return self.is_staff or self.is_superuser
