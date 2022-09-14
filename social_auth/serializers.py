@@ -2,7 +2,7 @@ from django.conf import settings
 from rest_framework import serializers
 from decouple import config
 from . import google, facebook
-from .register import login_social_user
+from .auth import login_google_user
 from rest_framework.exceptions import AuthenticationFailed
 
 
@@ -15,9 +15,8 @@ class FacebookSocialAuthSerializer(serializers.Serializer):
 
         try:
             email = user_data['email']
-            provider = settings.FACEBOOK
 
-            result = login_social_user(provider=provider, email=email)
+            result = login_google_user(email=email)
 
             if not result:
                 return serializers.ValidationError("User already use another social")
@@ -33,7 +32,7 @@ class FacebookSocialAuthSerializer(serializers.Serializer):
 
 class GoogleSocialAuthSerializer(serializers.Serializer):
     """Handles serialization of google related data"""
-    auth_token = serializers.CharField()
+    auth_token = serializers.JSONField()
 
     def validate_auth_token(self, auth_token):
         user_data = google.Google.validate(auth_token)
@@ -44,10 +43,12 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
         if user_data.get('aud') != config('GOOGLE_CLIENT_ID'):
             raise AuthenticationFailed('oops, who are you?')
 
-        email = user_data.get('email')
-        provider = settings.GOOGLE
+        email_verified = user_data.get('email_verified')
 
-        result = login_social_user(provider=provider, email=email)
+        if not email_verified:
+            raise serializers.ValidationError('Email not verified!')
+
+        result = login_google_user(user_data=user_data)
 
         if not result:
             raise serializers.ValidationError("User already use another social!")

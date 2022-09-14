@@ -23,8 +23,7 @@ class GoogleSocialAuthView(GenericAPIView):
         if not serializer.is_valid():
             return Response({'message': "Нельзя войти через эту учетную запись!"}, status=status.HTTP_200_OK)
 
-        data = serializer.data
-        return Response(data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class FacebookSocialAuthView(GenericAPIView):

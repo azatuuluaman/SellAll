@@ -12,7 +12,7 @@ from .views import (
     AdsCommentRUDView,
     CategoryRetrieveAPIView,
     AddPhoneView,
-    StatisticsView,
+    StatisticsView, SimularAdsView,
 )
 
 urlpatterns = [
@@ -28,4 +28,5 @@ urlpatterns = [
     path('comment/', AdsCommentCreateView.as_view(), name='comment_create'),
     path('comment/<int:pk>/', AdsCommentRUDView.as_view(), name='comment_rud'),
     path('phone_view/<int:pk>/', AddPhoneView.as_view(), name='phone_view'),
+    path('simular/<int:child_category_id>/', SimularAdsView.as_view(), name='simular')
 ]

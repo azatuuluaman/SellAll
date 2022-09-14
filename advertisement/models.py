@@ -167,3 +167,7 @@ class AdsComment(models.Model):
         verbose_name = 'Коментарий'
         verbose_name_plural = 'Кометарии'
         ordering = ['created_on']
+
+
+
+# class ComplainingForAds(models.Model):
