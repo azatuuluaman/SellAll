@@ -62,7 +62,12 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
 
     def get_is_favorite(self, obj):
-        instance = Favorite.objects.filter(user=self.context.get('request').user, advertisement=obj)
+        user = self.context.get('request').user
+
+        if not user.is_authenticated:
+            return False
+
+        instance = Favorite.objects.filter(user=user, advertisement=obj)
 
         if not instance:
             return False

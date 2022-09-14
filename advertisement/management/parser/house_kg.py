@@ -19,7 +19,7 @@ def main_house():
     child_category = ChildCategory.objects.all()
     print('Parsing start')
     print('##############')
-    for i in range(70, 80):
+    for i in range(1, 20):
         url = f'https://www.house.kg/kupit?page={i}'
         req = requests.get(url, headers=headers)
         src = req.text
