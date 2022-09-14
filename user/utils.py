@@ -9,10 +9,10 @@ def send_activation_mail(email, activation_code):
         'email_body': f"Спасибо за регистрацию. Код активаций: {activation_code}",
         'to_whom': email
     }
-    send_email(message)
+    send_message_to_email(message)
 
 
-def send_email(message):
+def send_message_to_email(message):
     send_mail(
         subject=message["email_subject"],
         message=message["email_body"],

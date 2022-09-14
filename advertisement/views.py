@@ -1,17 +1,21 @@
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
+
+from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import generics, status, views
 from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBackend
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, SAFE_METHODS
 from rest_framework.decorators import action
 
 from drf_yasg.utils import swagger_auto_schema
 
-from .swagger_scheme import category_id, has_image, price, max_price
+from .swagger_scheme import category_id_query, has_image_query, price_query, max_price_query, limit_query, \
+    child_category_id_query
 from .permissions import IsOwnerOrSuperUser, IsAuthorComment
 
 from .serializers import (
@@ -22,7 +26,7 @@ from .serializers import (
     ChildCategorySerializer,
     AdsSubscriberSerializer,
     AdsCommentSerializer,
-    CategoryDetailSerializer
+    CategoryDetailSerializer, ComplainingForAdsSerializer
 )
 
 from .models import (
@@ -31,7 +35,7 @@ from .models import (
     Advertisement,
     AdsSubscriber,
     City,
-    AdsComment
+    AdsComment, ComplainingForAds
 )
 from .utils import Redis, get_client_ip
 
@@ -123,7 +127,9 @@ class AdvertisementListView(generics.ListAPIView):
     search_fields = ('name',)
     ordering_fields = ('created_at', 'price')
 
-    @swagger_auto_schema(method='get', manual_parameters=[category_id, has_image, price, max_price])
+    @swagger_auto_schema(method='get', manual_parameters=[
+        category_id_query, has_image_query, price_query, max_price_query
+    ])
     @action(['get'], detail=False)
     def get(self, request, *args, **kwargs):
         return super(AdvertisementListView, self).get(request)
@@ -196,3 +202,51 @@ class StatisticsView(views.APIView):
         redis = Redis()
         data = redis.get_ads_data(ads_id)
         return Response(data, status=status.HTTP_200_OK)
+
+
+class SimularAdsView(views.APIView):
+    @swagger_auto_schema(method='get', manual_parameters=[limit_query, child_category_id_query])
+    @action(methods=['GET'], detail=False)
+    def get(self, request, *args, **kwargs):
+        """Get child category id"""
+
+        child_category_id = self.kwargs['child_category_id']
+        limit = self.request.query_params.get('limit')
+
+        if limit:
+            limit = int(limit)
+        else:
+            limit = 5
+
+        child_category = get_object_or_404(ChildCategory, pk=child_category_id)
+
+        advertisement = Advertisement.objects.filter(child_category=child_category)[:limit]
+        ads_count = advertisement.count()
+
+        if ads_count < limit:
+            category = Category.objects.get(child_categories=child_category)
+            simular_child_categories = ChildCategory.objects.filter(category=category.pk)
+
+            not_enough = limit - ads_count
+
+            for i in range(not_enough):
+                not_enough = limit - ads_count
+                advertisement_by_category = Advertisement.objects.filter(
+                    child_category=simular_child_categories[i])[:not_enough]
+
+                if limit >= ads_count:
+                    advertisement = advertisement | advertisement_by_category
+                    advertisement = advertisement.distinct()
+                    break
+
+                ads_count += len(advertisement_by_category)
+
+        serializer = AdvertisementRetrieveSerializer(advertisement, many=True)
+        return Response({'count': advertisement.count(), 'advertisement': serializer.data}, status=status.HTTP_200_OK)
+
+
+class ComplainingForAdsView(generics.CreateAPIView):
+    queryset = ComplainingForAds.objects.all()
+    serializer_class = ComplainingForAdsSerializer
+    permission_classes = [IsAuthenticated]
+

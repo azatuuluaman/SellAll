@@ -31,3 +31,6 @@ class MessageAPIView(APIView):
         pusher_client.trigger(chat.chat_id, 'message', data)
 
         return Response(data, status=status.HTTP_200_OK)
+
+
+# class Chat

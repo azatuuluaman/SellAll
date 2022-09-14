@@ -8,7 +8,9 @@ from .models import (
     AdsSubscriber,
     AdsImage,
     City,
-    Subscription, AdsComment
+    Subscription,
+    AdsComment,
+    ComplainingForAds
 )
 
 
@@ -101,3 +103,13 @@ class AdsCommentAdmin(admin.ModelAdmin):
     list_display = ('user', 'text', 'advertisement', 'created_on', 'modified_at')
     list_filter = ('created_on', 'modified_at', 'user')
     search_fields = ('user', 'text')
+
+
+@admin.register(ComplainingForAds)
+class ComplainingForAdsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'advertisement', 'type', 'send_date', 'checked_at', 'is_checked')
+    list_filter = ('advertisement', 'type', 'send_date', 'checked_at', 'is_checked')
+    search_fields = ('text',)
+    readonly_fields = ('checked_at',)
+    list_editable = ('type', 'is_checked',)
+

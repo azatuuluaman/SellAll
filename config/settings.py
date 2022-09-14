@@ -74,6 +74,58 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    # 'filters': {
+    #     'special': {
+    #         '()': 'project.logging.SpecialFilter',
+    #         'foo': 'bar',
+    #     },
+    #     'require_debug_true': {
+    #         '()': 'django.utils.log.RequireDebugTrue',
+    #     },
+    # },
+    # 'handlers': {
+    #     'console': {
+    #         'level': 'INFO',
+    #         'filters': ['require_debug_true'],
+    #         'class': 'logging.StreamHandler',
+    #         'formatter': 'simple'
+    #     },
+    #     'mail_admins': {
+    #         'level': 'ERROR',
+    #         'class': 'django.utils.log.AdminEmailHandler',
+    #         'filters': ['special']
+    #     }
+    # },
+    # 'loggers': {
+    #     'django': {
+    #         'handlers': ['console'],
+    #         'propagate': True,
+    #     },
+    #     'django.request': {
+    #         'handlers': ['mail_admins'],
+    #         'level': 'ERROR',
+    #         'propagate': False,
+    #     },
+    #     'myproject.custom': {
+    #         'handlers': ['console', 'mail_admins'],
+    #         'level': 'INFO',
+    #         'filters': ['special']
+    #     }
+    # }
+}
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
@@ -416,6 +468,20 @@ FACEBOOK = 'facebook'
 AUTH_TYPE = (
     (GOOGLE, GOOGLE),
     (FACEBOOK, FACEBOOK)
+)
+
+WRONG_RUBRIC = 'Неверная рубрика'
+BANNED_GOODS_OR_SERVICE = 'Запрещенный товар/услуга'
+NOT_ACTUAL = 'Объявление не актуально'
+WRONG_ADDRESS = 'Неверный адрес'
+OTHER = 'Другое'
+
+COMPLAINING_TYPE = (
+    (WRONG_RUBRIC, WRONG_RUBRIC),
+    (BANNED_GOODS_OR_SERVICE, BANNED_GOODS_OR_SERVICE),
+    (NOT_ACTUAL, NOT_ACTUAL),
+    (WRONG_ADDRESS, WRONG_ADDRESS),
+    (OTHER, OTHER),
 )
 
 CKEDITOR_CONFIGS = {

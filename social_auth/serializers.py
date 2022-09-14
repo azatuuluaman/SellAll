@@ -1,9 +1,11 @@
-from django.conf import settings
 from rest_framework import serializers
-from decouple import config
-from . import google, facebook
-from .register import register_social_user
 from rest_framework.exceptions import AuthenticationFailed
+
+from decouple import config
+
+from .google import Google
+from .facebook import Facebook
+from .auth import login_social_user, register_user_by_social
 
 
 class FacebookSocialAuthSerializer(serializers.Serializer):
@@ -11,40 +13,45 @@ class FacebookSocialAuthSerializer(serializers.Serializer):
     auth_token = serializers.CharField()
 
     def validate_auth_token(self, auth_token):
-        user_data = facebook.Facebook.validate(auth_token)
+        user_data = Facebook.validate(auth_token)
+        print(user_data)
+        email = user_data.get('email')
+        first_name = user_data.get('given_name')
+        last_name = user_data.get('family_name')
 
-        try:
-            email = user_data['email']
-            provider = settings.FACEBOOK
-            return register_social_user(
-                provider=provider,
-                email=email,
-            )
-        except Exception as identifier:
+        auth = login_social_user(email=email)
 
-            raise serializers.ValidationError(
-                'The token  is invalid or expired. Please login again.'
-            )
+        if not auth:
+            auth = register_user_by_social(email, first_name, last_name)
+
+        return auth
 
 
 class GoogleSocialAuthSerializer(serializers.Serializer):
     """Handles serialization of google related data"""
-    auth_token = serializers.CharField()
+    auth_token = serializers.JSONField()
 
     def validate_auth_token(self, auth_token):
-        user_data = google.Google.validate(auth_token)
-        try:
-            user_data['sub']
-        except:
-            raise serializers.ValidationError(
-                'The token is invalid or expired. Please login again.'
-            )
+        user_data = Google.validate(auth_token)
 
-        if user_data['aud'] != config('GOOGLE_CLIENT_ID'):
+        if not user_data.get('sub'):
+            raise serializers.ValidationError('The token is invalid or expired. Please login again.')
+
+        if user_data.get('aud') != config('GOOGLE_CLIENT_ID'):
             raise AuthenticationFailed('oops, who are you?')
 
-        email = user_data['email']
-        provider = settings.GOOGLE
+        email_verified = user_data.get('email_verified')
 
-        return register_social_user(
-            provider=provider, email=email)
+        if not email_verified:
+            raise serializers.ValidationError('Email not verified!')
+
+        email = user_data.get('email')
+        first_name = user_data.get('given_name')
+        last_name = user_data.get('family_name')
+
+        auth = login_social_user(email=email)
+
+        if not auth:
+            auth = register_user_by_social(email, first_name, last_name)
+
+        return auth

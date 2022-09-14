@@ -62,8 +62,10 @@ class Advertisement(models.Model):
     modified_at = models.DateTimeField('Последняя дата изменения', auto_now=True)
     disable_date = models.DateTimeField('Неактивен с', null=True, blank=True)
 
-    child_category = models.ForeignKey(ChildCategory, on_delete=models.SET_NULL, verbose_name='Подкатегория', blank=True, null=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name='Автор', blank=True, null=True)
+    child_category = models.ForeignKey(ChildCategory, on_delete=models.SET_NULL, verbose_name='Подкатегория',
+                                       blank=True, null=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name='Автор', blank=True,
+                              null=True)
 
     def __str__(self):
         return self.name
@@ -98,8 +100,10 @@ class Subscription(models.Model):
 
 
 class AdsSubscriber(models.Model):
-    advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, verbose_name='Объявление', blank=True, null=True)
-    subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, verbose_name='Подписка', blank=True, null=True)
+    advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, verbose_name='Объявление', blank=True,
+                                      null=True)
+    subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, verbose_name='Подписка', blank=True,
+                                     null=True)
     start_date = models.DateTimeField('Дата начала')
     end_date = models.DateTimeField('Дата окончания')
     created_at = models.DateTimeField('Дата создания', auto_now=True)
@@ -167,3 +171,28 @@ class AdsComment(models.Model):
         verbose_name = 'Коментарий'
         verbose_name_plural = 'Кометарии'
         ordering = ['created_on']
+
+
+class ComplainingForAds(models.Model):
+    advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, null=True, blank=True)
+    type = models.CharField("Тип жалобы", max_length=100, choices=settings.COMPLAINING_TYPE,
+                            default=settings.WRONG_RUBRIC)
+    text = models.TextField('Текст', null=True, blank=True)
+    send_date = models.DateTimeField('Дата отправки', auto_now_add=True)
+    checked_at = models.DateTimeField('Дата проверки', null=True, blank=True)
+
+    is_checked = models.BooleanField('Проверен', default=False)
+
+    def save(self, *args, **kwargs):
+        if self.is_checked:
+            self.checked_at = timezone.now()
+        else:
+            self.checked_at = None
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.advertisement.pk} - {self.type}'
+
+    class Meta:
+        verbose_name = 'Жалоба'
+        verbose_name_plural = 'Жалобы'
