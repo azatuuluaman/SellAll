@@ -67,7 +67,7 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
             if price:
                 filters['price__gte'] = price
             if max_price:
-                filters['max_price__lte'] = max_price
+                filters['max_price__lte'] = price
 
         queryset = queryset.filter(**filters).distinct()
         return queryset

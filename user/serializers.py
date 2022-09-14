@@ -6,6 +6,7 @@ from django.contrib.auth import password_validation
 from rest_framework import serializers
 
 from advertisement.utils import Redis
+
 from .models import User
 from .utils import send_activation_mail
 
