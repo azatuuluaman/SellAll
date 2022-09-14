@@ -20,6 +20,7 @@ from advertisement.swagger_scheme import (
     max_price_query,
     limit_query,
     child_category_id_query,
+    cities_query
 )
 
 from advertisement.permissions import IsOwnerOrSuperUser
@@ -49,6 +50,8 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
         price = request.query_params.get('price')
         max_price = request.query_params.get('max_price')
         has_image = request.query_params.get('has_image')
+        cities = request.query_params.get('cities')
+
         filters = {}
 
         if category_id:
@@ -63,11 +66,18 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
             queryset = queryset.filter(price & max_price).filter(**filters).distinct()
             return queryset
 
+        if cities:
+            filters['city__in'] = cities
+
         else:
             if price:
                 filters['price__gte'] = price
             if max_price:
-                filters['max_price__lte'] = price
+                price = Q(price__lte=max_price)
+                max_price = Q(max_price__lte=max_price)
+
+                queryset = queryset.filter(price | max_price).filter(**filters).distinct()
+                return queryset
 
         queryset = queryset.filter(**filters).distinct()
         return queryset
@@ -122,12 +132,12 @@ class AdvertisementListView(generics.ListAPIView):
     serializer_class = AdvertisementRetrieveSerializer
     permission_classes = [AllowAny]
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter, AdvertisementCustomFilterBackend)
-    filterset_fields = ('child_category_id', 'city', 'disable_date')
+    filterset_fields = ('child_category_id', 'disable_date')
     search_fields = ('name',)
     ordering_fields = ('created_at', 'price')
 
     @swagger_auto_schema(method='get', manual_parameters=[
-        category_id_query, has_image_query, price_query, max_price_query
+        category_id_query, has_image_query, price_query, max_price_query, cities_query
     ])
     @action(['get'], detail=False)
     def get(self, request, *args, **kwargs):
@@ -183,5 +193,3 @@ class ComplainingForAdsView(generics.CreateAPIView):
     queryset = ComplainingForAds.objects.all()
     serializer_class = ComplainingForAdsSerializer
     permission_classes = [IsAuthenticated]
-
-
