@@ -46,11 +46,11 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, view):
-        category_id = request.query_params.get('category_id')
-        price = request.query_params.get('price')
-        max_price = request.query_params.get('max_price')
-        has_image = request.query_params.get('has_image')
-        cities = request.query_params.get('cities')
+        category_id = request.query_params.get('category_id_query')
+        price = request.query_params.get('price_query')
+        max_price = request.query_params.get('max_price_query')
+        has_image = request.query_params.get('has_image_query')
+        cities = request.query_params.get('cities_query').split(',')
 
         filters = {}
 
