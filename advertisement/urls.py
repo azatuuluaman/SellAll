@@ -1,19 +1,23 @@
 from django.urls import path
 
-from .views import (
-    AdvertisementCreateView,
-    AdvertisementListView,
-    AdvertisementRUDView,
+from advertisement.views.other_views import (
     CategoryAPIView,
     CityAPIView,
     ChildCategoryAPIView,
     AdsSubscriberAPIView,
-    AdsCommentCreateView,
-    AdsCommentRUDView,
     CategoryRetrieveAPIView,
-    AddPhoneView,
-    StatisticsView, SimularAdsView, ComplainingForAdsView,
 )
+
+from advertisement.views.advertisement_views import (
+    AdvertisementCreateView,
+    AdvertisementListView,
+    AdvertisementRUDView,
+    SimularAdsView,
+    ComplainingForAdsView,
+)
+
+from advertisement.views.comment_views import AdsCommentCreateView, AdsCommentRUDView
+from advertisement.views.statistic_views import AddPhoneView, StatisticsView
 
 urlpatterns = [
     path('create/', AdvertisementCreateView.as_view(), name='ads_create'),

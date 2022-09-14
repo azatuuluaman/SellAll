@@ -7,37 +7,36 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import generics, status, views
 from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBackend
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, SAFE_METHODS
 from rest_framework.decorators import action
 
 from drf_yasg.utils import swagger_auto_schema
 
-from .swagger_scheme import category_id_query, has_image_query, price_query, max_price_query, limit_query, \
-    child_category_id_query
-from .permissions import IsOwnerOrSuperUser, IsAuthorComment
-
-from .serializers import (
-    AdvertisementSerializer,
-    AdvertisementRetrieveSerializer,
-    CitySerializer,
-    CategorySerializer,
-    ChildCategorySerializer,
-    AdsSubscriberSerializer,
-    AdsCommentSerializer,
-    CategoryDetailSerializer, ComplainingForAdsSerializer
+from advertisement.swagger_scheme import (
+    category_id_query,
+    has_image_query,
+    price_query,
+    max_price_query,
+    limit_query,
+    child_category_id_query,
 )
 
-from .models import (
+from advertisement.permissions import IsOwnerOrSuperUser
+
+from advertisement.serializers import (
+    AdvertisementSerializer,
+    AdvertisementRetrieveSerializer,
+    ComplainingForAdsSerializer
+)
+
+from advertisement.models import (
     Category,
     ChildCategory,
     Advertisement,
-    AdsSubscriber,
-    City,
-    AdsComment, ComplainingForAds
+    ComplainingForAds
 )
-from .utils import Redis, get_client_ip
+from advertisement.utils import Redis, get_client_ip
 
 
 class AdvertisementCustomFilterBackend(BaseFilterBackend):
@@ -139,71 +138,6 @@ class AdvertisementListView(generics.ListAPIView):
         return queryset
 
 
-class CityAPIView(generics.ListAPIView):
-    serializer_class = CitySerializer
-    queryset = City.objects.all()
-
-
-class CategoryAPIView(generics.ListAPIView):
-    serializer_class = CategorySerializer
-    queryset = Category.objects.all()
-
-
-class CategoryRetrieveAPIView(generics.RetrieveAPIView):
-    serializer_class = CategoryDetailSerializer
-    queryset = Category.objects.all()
-
-
-class ChildCategoryAPIView(generics.ListAPIView):
-    serializer_class = ChildCategorySerializer
-    queryset = ChildCategory.objects.all()
-
-
-class AdsSubscriberAPIView(generics.ListAPIView):
-    serializer_class = AdsSubscriberSerializer
-    queryset = AdsSubscriber.objects.all()
-
-
-class AdsCommentCreateView(generics.CreateAPIView):
-    serializer_class = AdsCommentSerializer
-    permission_classes = [IsAuthenticated]
-
-
-class AdsCommentRUDView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = AdsCommentSerializer
-    queryset = AdsComment.objects.all()
-    permission_classes = [IsAuthorComment]
-
-
-class AddPhoneView(views.APIView):
-    def get(self, request, *args, **kwargs):
-        ads_id = self.kwargs.get('pk')
-        ads = Advertisement.objects.filter(pk=ads_id).exists()
-
-        if not ads:
-            return Response({'message': 'Advertisement not found!'}, status=status.HTTP_400_BAD_REQUEST)
-
-        redis = Redis()
-        date = timezone.now().date().strftime('%d.%m.%Y')
-        client_ip = get_client_ip(request)
-        redis.add_phone_views(ads_id, date, client_ip)
-
-        return Response({'message': 'Success'}, status=status.HTTP_200_OK)
-
-
-class StatisticsView(views.APIView):
-    def get(self, request, *args, **kwargs):
-        ads_id = self.kwargs['pk']
-        ads = Advertisement.objects.filter(pk=ads_id).exists()
-
-        if not ads:
-            return Response({'message': 'Advertisement not found!'}, status=status.HTTP_400_BAD_REQUEST)
-
-        redis = Redis()
-        data = redis.get_ads_data(ads_id)
-        return Response(data, status=status.HTTP_200_OK)
-
-
 class SimularAdsView(views.APIView):
     @swagger_auto_schema(method='get', manual_parameters=[limit_query, child_category_id_query])
     @action(methods=['GET'], detail=False)
@@ -249,4 +183,5 @@ class ComplainingForAdsView(generics.CreateAPIView):
     queryset = ComplainingForAds.objects.all()
     serializer_class = ComplainingForAdsSerializer
     permission_classes = [IsAuthenticated]
+
 
