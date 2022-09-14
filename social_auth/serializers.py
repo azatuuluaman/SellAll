@@ -1,9 +1,11 @@
-from django.conf import settings
 from rest_framework import serializers
-from decouple import config
-from . import google, facebook
-from .auth import login_google_user
 from rest_framework.exceptions import AuthenticationFailed
+
+from decouple import config
+
+from .google import Google
+from .facebook import Facebook
+from .auth import login_social_user, register_user_by_social
 
 
 class FacebookSocialAuthSerializer(serializers.Serializer):
@@ -11,23 +13,18 @@ class FacebookSocialAuthSerializer(serializers.Serializer):
     auth_token = serializers.CharField()
 
     def validate_auth_token(self, auth_token):
-        user_data = facebook.Facebook.validate(auth_token)
+        user_data = Facebook.validate(auth_token)
 
-        try:
-            email = user_data['email']
+        email = user_data.get('email')
+        first_name = user_data.get('given_name')
+        last_name = user_data.get('family_name')
 
-            result = login_google_user(email=email)
+        auth = login_social_user(email=email)
 
-            if not result:
-                return serializers.ValidationError("User already use another social")
+        if not auth:
+            auth = register_user_by_social(email, first_name, last_name)
 
-            return result
-
-        except Exception as identifier:
-
-            raise serializers.ValidationError(
-                'The token  is invalid or expired. Please login again.'
-            )
+        return auth
 
 
 class GoogleSocialAuthSerializer(serializers.Serializer):
@@ -35,7 +32,7 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
     auth_token = serializers.JSONField()
 
     def validate_auth_token(self, auth_token):
-        user_data = google.Google.validate(auth_token)
+        user_data = Google.validate(auth_token)
 
         if not user_data.get('sub'):
             raise serializers.ValidationError('The token is invalid or expired. Please login again.')
@@ -48,9 +45,13 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
         if not email_verified:
             raise serializers.ValidationError('Email not verified!')
 
-        result = login_google_user(user_data=user_data)
+        email = user_data.get('email')
+        first_name = user_data.get('given_name')
+        last_name = user_data.get('family_name')
 
-        if not result:
-            raise serializers.ValidationError("User already use another social!")
+        auth = login_social_user(email=email)
 
-        return result
+        if not auth:
+            auth = register_user_by_social(email, first_name, last_name)
+
+        return auth
