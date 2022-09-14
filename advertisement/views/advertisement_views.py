@@ -71,6 +71,9 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
             queryset = queryset_1 | queryset_2
             return queryset.distinct()
         else:
+            if price:
+                filters['price__gte'] = price
+
             if max_price:
                 min_price = Q(price__lte=max_price)
                 max_price = Q(max_price__lte=max_price)
@@ -78,9 +81,8 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
                 queryset = queryset.filter(min_price | max_price).filter(**filters).distinct()
                 return queryset
 
-            filters['price__gte'] = price
-
         queryset = queryset.filter(**filters).distinct()
+
         return queryset
 
 
