@@ -46,11 +46,11 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, view):
-        category_id = request.query_params.get('category_id_query')
-        price = request.query_params.get('price_query')
-        max_price = request.query_params.get('max_price_query')
-        has_image = request.query_params.get('has_image_query')
-        cities = request.query_params.get('cities_query')
+        category_id = request.query_params.get('category_id')
+        price = request.query_params.get('price')
+        max_price = request.query_params.get('max_price')
+        has_image = request.query_params.get('has_image')
+        cities = request.query_params.get('cities')
 
         filters = {}
 
@@ -71,14 +71,14 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
             queryset = queryset_1 | queryset_2
             return queryset.distinct()
         else:
-            if price:
-                filters['price__gte'] = price
             if max_price:
-                price = Q(price__lte=max_price)
+                min_price = Q(price__lte=max_price)
                 max_price = Q(max_price__lte=max_price)
 
-                queryset = queryset.filter(price | max_price).filter(**filters).distinct()
+                queryset = queryset.filter(min_price | max_price).filter(**filters).distinct()
                 return queryset
+
+            filters['price__gte'] = price
 
         queryset = queryset.filter(**filters).distinct()
         return queryset
@@ -125,7 +125,7 @@ class AdvertisementRUDView(generics.RetrieveUpdateDestroyAPIView):
 
         redis.add_views(ads_id, date, client_ip)
 
-        serializer = self.get_serializer(instance)
+        serializer = self.get_serializer(instance, context={'user': self.request.user.pk})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

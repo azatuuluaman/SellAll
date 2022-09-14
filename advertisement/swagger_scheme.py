@@ -5,7 +5,7 @@ category_id_query = openapi.Parameter('category_id', openapi.IN_QUERY, descripti
 has_image_query = openapi.Parameter('has_image', openapi.IN_QUERY, description='Has image', type=openapi.TYPE_BOOLEAN)
 price_query = openapi.Parameter('price', openapi.IN_QUERY, description='Price', type=openapi.TYPE_INTEGER)
 max_price_query = openapi.Parameter('max_price', openapi.IN_QUERY, description='Max price', type=openapi.TYPE_INTEGER)
-cities_query = openapi.Parameter('cities_query', openapi.IN_QUERY, description='Cities array', type=openapi.TYPE_ARRAY,
+cities_query = openapi.Parameter('cities', openapi.IN_QUERY, description='Cities array', type=openapi.TYPE_ARRAY,
                                  items=openapi.Items(type=openapi.TYPE_STRING))
 
 limit_query = openapi.Parameter('limit', openapi.IN_QUERY, description='Simular advertisement count',

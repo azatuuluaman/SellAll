@@ -1,3 +1,5 @@
+import random
+
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.conf import settings
@@ -78,7 +80,10 @@ class Advertisement(models.Model):
             self.disable_date = None
 
         if self._state.adding:
-            self.slug = slugify(f'{self.name}-{self.owner.pk}', allow_unicode=True)
+            if self.owner:
+                self.slug = slugify(f'{self.name}-{self.owner.pk}', allow_unicode=True)
+            else:
+                self.slug = slugify(f'{self.name}-{random.randint(1000, 9999)}', allow_unicode=True)
 
         super().save(*args, **kwargs)
 
@@ -138,7 +143,7 @@ class Favorites(models.Model):
                              verbose_name='Пользователь', related_name='favorites')
 
     def __str__(self):
-        return self.user
+        return f'{self.user.email}-{self.advertisement}'
 
     class Meta:
         verbose_name = 'Избранное'

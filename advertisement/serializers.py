@@ -11,7 +11,7 @@ from .models import (
     AdsSubscriber,
     AdsImage,
     City,
-    AdsComment, ComplainingForAds
+    AdsComment, ComplainingForAds, Favorites
 )
 from .utils import Redis
 
@@ -55,9 +55,18 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     owner = serializers.CharField(source='owner.email', read_only=True)
     images = AdsImageListSerializer(many=True, read_only=True)
     comments = serializers.SerializerMethodField(read_only=True)
-    subscribtions = serializers.SerializerMethodField(read_only=True)
+    subscribers = serializers.SerializerMethodField(read_only=True)
+    is_favorite = serializers.SerializerMethodField(read_only=True)
 
-    def get_subscribtions(self, obj):
+    def get_is_favorite(self, obj):
+        instance = Favorites.objects.filter(user=self.context.get('user'), advertisement=obj)
+
+        if not instance:
+            return False
+
+        return True
+
+    def get_subscribers(self, obj):
         date = timezone.now()
         instance = AdsSubscriber.objects.filter(Q(start_date__gte=date) & Q(end_date__lte=date), advertisement=obj)
         return AdsSubscriberSerializer(instance, many=True).data
@@ -96,7 +105,8 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
             'disable_date',
             'city',
             'child_category',
-            'subscribtions',
+            'subscribers',
+            'is_favorite',
             'owner',
             'images',
             'comments'
