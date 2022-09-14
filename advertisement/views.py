@@ -220,7 +220,7 @@ class SimularAdsView(views.APIView):
 
         child_category = get_object_or_404(ChildCategory, pk=child_category_id)
 
-        advertisement = Advertisement.objects.filter(child_category=child_category)[:5]
+        advertisement = Advertisement.objects.filter(child_category=child_category)[:limit]
         ads_count = advertisement.count()
 
         if ads_count < limit:
@@ -236,10 +236,10 @@ class SimularAdsView(views.APIView):
 
                 if limit >= ads_count:
                     advertisement = advertisement | advertisement_by_category
+                    advertisement = advertisement.distinct()
                     break
 
                 ads_count += len(advertisement_by_category)
 
-        data = advertisement.distinct()
-        serializer = AdvertisementRetrieveSerializer(data, many=True)
-        return Response({'count': data.count(), 'advertisement': serializer.data}, status=status.HTTP_200_OK)
+        serializer = AdvertisementRetrieveSerializer(advertisement, many=True)
+        return Response({'count': advertisement.count(), 'advertisement': serializer.data}, status=status.HTTP_200_OK)

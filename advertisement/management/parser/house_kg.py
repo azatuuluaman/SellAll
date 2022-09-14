@@ -19,7 +19,7 @@ def main_house():
     child_category = ChildCategory.objects.all()
     print('Parsing start')
     print('##############')
-    for i in range(1, 21):
+    for i in range(70, 80):
         url = f'https://www.house.kg/kupit?page={i}'
         req = requests.get(url, headers=headers)
         src = req.text
@@ -66,6 +66,6 @@ def main_house():
                                          description=advertisement_description, type=settings.ACTIVE,
                                          child_category=child_category[random_num])
         except AttributeError:
-            pass
+            continue
 
     print('End!')
