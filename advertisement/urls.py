@@ -1,5 +1,6 @@
 from django.urls import path
 
+from advertisement.views.favorite_views import FavoriteAPIView
 from advertisement.views.other_views import (
     CategoryAPIView,
     CityAPIView,
@@ -33,5 +34,6 @@ urlpatterns = [
     path('comment/<int:pk>/', AdsCommentRUDView.as_view(), name='comment_rud'),
     path('phone_view/<int:pk>/', AddPhoneView.as_view(), name='phone_view'),
     path('simular/<int:child_category_id>/', SimularAdsView.as_view(), name='simular'),
-    path('complaining/', ComplainingForAdsView.as_view(), name='complaining')
+    path('complaining/', ComplainingForAdsView.as_view(), name='complaining'),
+    path('favorites/', FavoriteAPIView.as_view(), name='favorites'),
 ]

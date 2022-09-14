@@ -11,7 +11,9 @@ from .models import (
     AdsSubscriber,
     AdsImage,
     City,
-    AdsComment, ComplainingForAds, Favorites
+    AdsComment,
+    ComplainingForAds,
+    Favorite
 )
 from .utils import Redis
 
@@ -59,7 +61,7 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     is_favorite = serializers.SerializerMethodField(read_only=True)
 
     def get_is_favorite(self, obj):
-        instance = Favorites.objects.filter(user=self.context.get('user'), advertisement=obj)
+        instance = Favorite.objects.filter(user=self.context.get('request').user, advertisement=obj)
 
         if not instance:
             return False

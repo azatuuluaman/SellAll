@@ -136,7 +136,7 @@ class AdsImage(models.Model):
         verbose_name_plural = 'Изображения объявлений'
 
 
-class Favorites(models.Model):
+class Favorite(models.Model):
     advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE,
                                       verbose_name='Объявление', related_name='favorites')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,

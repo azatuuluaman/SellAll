@@ -57,7 +57,7 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
         if category_id:
             filters['child_category__category_id'] = category_id
 
-        if has_image == 'True':
+        if has_image == 'true':
             filters['images__isnull'] = False
 
         if cities:
@@ -127,7 +127,7 @@ class AdvertisementRUDView(generics.RetrieveUpdateDestroyAPIView):
 
         redis.add_views(ads_id, date, client_ip)
 
-        serializer = self.get_serializer(instance, context={'user': self.request.user.pk})
+        serializer = self.get_serializer(instance, context={'request': self.request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -188,8 +188,8 @@ class SimularAdsView(views.APIView):
 
                 ads_count += len(advertisement_by_category)
 
-        serializer = AdvertisementRetrieveSerializer(advertisement, many=True)
-        return Response({'count': advertisement.count(), 'advertisement': serializer.data}, status=status.HTTP_200_OK)
+        serializer = AdvertisementRetrieveSerializer(advertisement, many=True, context={'request': request})
+        return Response({'count': advertisement.count(), 'results': serializer.data}, status=status.HTTP_200_OK)
 
 
 class ComplainingForAdsView(generics.CreateAPIView):

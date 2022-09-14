@@ -10,7 +10,8 @@ from .models import (
     City,
     Subscription,
     AdsComment,
-    ComplainingForAds, Favorites
+    ComplainingForAds,
+    Favorite
 )
 
 
@@ -105,8 +106,8 @@ class AdsCommentAdmin(admin.ModelAdmin):
     search_fields = ('user', 'text')
 
 
-@admin.register(Favorites)
-class FavoritesAdmin(admin.ModelAdmin):
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('id', 'advertisement', 'user')
     list_display_links = ('id', 'advertisement')
     list_filter = ('advertisement', 'user')
