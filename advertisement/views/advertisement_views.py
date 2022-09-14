@@ -50,7 +50,7 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
         price = request.query_params.get('price_query')
         max_price = request.query_params.get('max_price_query')
         has_image = request.query_params.get('has_image_query')
-        cities = request.query_params.get('cities_query').split(',')
+        cities = request.query_params.get('cities_query')
 
         filters = {}
 
@@ -61,7 +61,7 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
             filters['images__isnull'] = False
 
         if cities:
-            filters['city__in'] = cities
+            filters['city__in'] = cities.split(',')
 
         if price and max_price:
             min_price_filter = Q(price__gte=price)
