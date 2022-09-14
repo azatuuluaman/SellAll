@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.models import Q
 from django.utils import timezone
 
@@ -10,7 +11,7 @@ from .models import (
     AdsSubscriber,
     AdsImage,
     City,
-    AdsComment
+    AdsComment, ComplainingForAds
 )
 from .utils import Redis
 
@@ -194,3 +195,18 @@ class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = '__all__'
+
+
+class ComplainingForAdsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ComplainingForAds
+        fields = ('id', 'advertisement', 'type', 'text')
+
+    def validate(self, attrs):
+        type = attrs.get('type')
+        text = attrs.get('text')
+
+        if type == settings.OTHER and not text:
+            raise serializers.ValidationError('Другое должен иметь текст!')
+
+        return attrs

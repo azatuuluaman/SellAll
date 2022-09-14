@@ -470,6 +470,20 @@ AUTH_TYPE = (
     (FACEBOOK, FACEBOOK)
 )
 
+WRONG_RUBRIC = 'Неверная рубрика'
+BANNED_GOODS_OR_SERVICE = 'Запрещенный товар/услуга'
+NOT_ACTUAL = 'Объявление не актуально'
+WRONG_ADDRESS = 'Неверный адрес'
+OTHER = 'Другое'
+
+COMPLAINING_TYPE = (
+    (WRONG_RUBRIC, WRONG_RUBRIC),
+    (BANNED_GOODS_OR_SERVICE, BANNED_GOODS_OR_SERVICE),
+    (NOT_ACTUAL, NOT_ACTUAL),
+    (WRONG_ADDRESS, WRONG_ADDRESS),
+    (OTHER, OTHER),
+)
+
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'Custom',

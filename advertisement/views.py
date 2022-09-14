@@ -26,7 +26,7 @@ from .serializers import (
     ChildCategorySerializer,
     AdsSubscriberSerializer,
     AdsCommentSerializer,
-    CategoryDetailSerializer
+    CategoryDetailSerializer, ComplainingForAdsSerializer
 )
 
 from .models import (
@@ -35,7 +35,7 @@ from .models import (
     Advertisement,
     AdsSubscriber,
     City,
-    AdsComment
+    AdsComment, ComplainingForAds
 )
 from .utils import Redis, get_client_ip
 
@@ -243,3 +243,10 @@ class SimularAdsView(views.APIView):
 
         serializer = AdvertisementRetrieveSerializer(advertisement, many=True)
         return Response({'count': advertisement.count(), 'advertisement': serializer.data}, status=status.HTTP_200_OK)
+
+
+class ComplainingForAdsView(generics.CreateAPIView):
+    queryset = ComplainingForAds.objects.all()
+    serializer_class = ComplainingForAdsSerializer
+    permission_classes = [IsAuthenticated]
+
