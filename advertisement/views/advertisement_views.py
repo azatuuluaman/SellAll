@@ -60,15 +60,16 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
         if has_image == 'True':
             filters['images__isnull'] = False
 
-        if price and max_price:
-            price = Q(price__gte=price)
-            max_price = Q(max_price__lte=max_price)
-            queryset = queryset.filter(price & max_price).filter(**filters).distinct()
-            return queryset
-
         if cities:
             filters['city__in'] = cities
 
+        if price and max_price:
+            min_price_filter = Q(price__gte=price)
+            max_price_filter = Q(price__lte=max_price)
+            queryset_1 = queryset.filter(min_price_filter & max_price_filter, **filters)
+            queryset_2 = queryset_1.filter(max_price__lte=max_price, max_price__isnull=False)
+            queryset = queryset_1 | queryset_2
+            return queryset.distinct()
         else:
             if price:
                 filters['price__gte'] = price
