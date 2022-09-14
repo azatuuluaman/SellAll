@@ -151,6 +151,19 @@ class AdvertisementListView(generics.ListAPIView):
         return queryset
 
 
+class UserAdvertisementListView(generics.ListAPIView):
+    """You can filter by Активный - На проверке - Неактивный. And search by name!"""
+    serializer_class = AdvertisementRetrieveSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    filterset_fields = ('type',)
+    search_fields = ('name',)
+
+    def get_queryset(self):
+        queryset = Advertisement.objects.filter(owner=self.request.user)
+        return queryset
+
+
 class SimularAdsView(views.APIView):
     @swagger_auto_schema(method='get', manual_parameters=[limit_query, child_category_id_query])
     @action(methods=['GET'], detail=False)

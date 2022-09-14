@@ -15,6 +15,7 @@ from advertisement.views.advertisement_views import (
     AdvertisementRUDView,
     SimularAdsView,
     ComplainingForAdsView,
+    UserAdvertisementListView,
 )
 
 from advertisement.views.comment_views import AdsCommentCreateView, AdsCommentRUDView
@@ -23,6 +24,7 @@ from advertisement.views.statistic_views import AddPhoneView, StatisticsView
 urlpatterns = [
     path('create/', AdvertisementCreateView.as_view(), name='ads_create'),
     path('list/', AdvertisementListView.as_view(), name='ads_list'),
+    path('users-ads/', UserAdvertisementListView.as_view(), name='users_ads'),
     path('<int:pk>/', AdvertisementRUDView.as_view(), name='advertisement'),
     path('categories/', CategoryAPIView.as_view(), name='categories'),
     path('category/<int:pk>/', CategoryRetrieveAPIView.as_view(), name='category'),

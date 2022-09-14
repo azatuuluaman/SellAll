@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from rest_framework import serializers
 
+from user.serializers import UserSerializer
 from .models import (
     Category,
     ChildCategory,
@@ -54,11 +55,11 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     phone_view_count = serializers.SerializerMethodField()
     city = serializers.CharField(source='city.name', read_only=True)
     child_category = serializers.CharField(source='child_category.name', read_only=True)
-    owner = serializers.CharField(source='owner.email', read_only=True)
     images = AdsImageListSerializer(many=True, read_only=True)
     comments = serializers.SerializerMethodField(read_only=True)
     subscribers = serializers.SerializerMethodField(read_only=True)
     is_favorite = serializers.SerializerMethodField(read_only=True)
+    owner = UserSerializer(read_only=True)
 
     def get_is_favorite(self, obj):
         instance = Favorite.objects.filter(user=self.context.get('request').user, advertisement=obj)
