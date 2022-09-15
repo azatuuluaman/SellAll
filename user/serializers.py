@@ -8,7 +8,7 @@ from rest_framework import serializers
 from advertisement.utils import Redis
 
 from .models import User
-from .utils import send_activation_mail
+from .tasks import send_activation_mail
 
 User = get_user_model()
 
@@ -41,7 +41,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         key = f'activate_code_{activation_code}'
         redis.conn.set(key, user.pk)
         redis.conn.expire(key, 3600)
-        send_activation_mail(user.email, activation_code)
+        send_activation_mail.delay(user.email, activation_code)
         return user
 
     class Meta:

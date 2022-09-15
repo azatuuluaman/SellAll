@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import generics, status, views
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -10,6 +10,7 @@ from rest_framework.decorators import action
 
 from advertisement.utils import Redis
 from .serializers import UserRegisterSerializer, UserSerializer
+from .tasks import send_ads_for_emails
 
 User = get_user_model()
 
@@ -76,3 +77,11 @@ class UserAPIVIew(views.APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SendMassAPIView(views.APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        send_ads_for_emails.delay()
+        return Response('Sending message for all users!', status=status.HTTP_200_OK)

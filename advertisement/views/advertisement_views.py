@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.db.models import Q
 
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg import openapi
 
 from rest_framework import generics, status, views
 from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBackend
@@ -20,7 +21,7 @@ from advertisement.swagger_scheme import (
     max_price_query,
     limit_query,
     child_category_id_query,
-    cities_query
+    cities_query,
 )
 
 from advertisement.permissions import IsOwnerOrSuperUser
