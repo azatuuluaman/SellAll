@@ -12,6 +12,11 @@ services:
   redis:
     image: redis:6.2-alpine
     restart: always
+    expose:
+      - ${REDIS_PORT}
+    ports:
+      - '6380:6379'
+
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
@@ -19,7 +24,25 @@ services:
       - .:/code
       - /etc/localtime:/etc/localtime:ro
     ports:
-      - "8001:8000"
+      - '8001:8000'
     depends_on:
       - db
       - redis
+
+  celery-worker:
+    restart: always
+    build:
+      context: .
+    command: celery -A config worker -l info
+    depends_on:
+      - redis
+      - web
+
+  celery-beat:
+    restart: always
+    build:
+      context: .
+    command: celery -A config beat -l info
+    depends_on:
+      - redis
+      - web

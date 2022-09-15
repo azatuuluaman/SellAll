@@ -149,7 +149,6 @@ class AdvertisementSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         instance = super(AdvertisementSerializer, self).create(validated_data)
         instance.save()
-
         images = self.context.get('images')
 
         for image in images:

@@ -103,7 +103,7 @@ class AdvertisementCreateView(generics.CreateAPIView):
 
         serializer = self.get_serializer(data=data, context=context_data)
         serializer.is_valid(raise_exception=True)
-
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
