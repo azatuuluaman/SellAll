@@ -86,10 +86,10 @@ LOGGING = {
     },
 
     'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'main_formatter',
-        },
+        # 'console': {
+        #     'class': 'logging.StreamHandler',
+        #     'formatter': 'main_formatter',
+        # },
         'debug': {
             'class': 'logging.FileHandler',
             'filename': 'log/dubug.log',
@@ -111,7 +111,12 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'error', 'info', 'debug'],
+            'handlers': [
+                # 'console',
+                'error',
+                'info',
+                'debug'
+            ],
             'propagate': True,
             'level': 1,
         },

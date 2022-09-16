@@ -11,12 +11,18 @@ class MessageSerializer(serializers.ModelSerializer):
             'sender',
             'chat',
             'message',
-            'send_date'
+            'send_date',
+            'is_read',
         )
 
 
 class ChatSerializer(serializers.ModelSerializer):
     message = serializers.SerializerMethodField(read_only=True)
+    unread_count = serializers.SerializerMethodField(read_only=True)
+
+    def get_unread_count(self, obj):
+        message_count = Message.objects.filter(chat=obj, is_read=False).count()
+        return message_count
 
     def get_message(self, obj):
         instance = Message.objects.filter(chat=obj).last()
@@ -31,4 +37,5 @@ class ChatSerializer(serializers.ModelSerializer):
             'chat_id',
             'advertisement',
             'message',
+            'unread_count',
         )

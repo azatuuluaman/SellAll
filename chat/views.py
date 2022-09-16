@@ -23,7 +23,7 @@ class MessageAPIView(views.APIView):
                                  'ads_id': openapi.Schema(type=openapi.TYPE_INTEGER),
                                  'message': openapi.Schema(type=openapi.TYPE_STRING),
                              },
-                             operation_description='Uninstall a version of Site'))
+                             operation_description='Send message'))
     @action(['post'], detail=False)
     def post(self, request):
         ads_id = request.data.get('ads_id')
@@ -52,3 +52,23 @@ class ChatAPIVIew(generics.ListAPIView):
 
     def get_queryset(self):
         return Chat.objects.filter(advertisement__owner=self.request.user)
+
+
+class MessageReadAPIView(views.APIView):
+    @swagger_auto_schema(method='post', request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        required=['version'],
+        properties={
+            'chat_id': openapi.Schema(type=openapi.TYPE_STRING),
+        },
+        operation_description='Read message in chat'))
+    @action(methods=['POST'], detail=False)
+    def post(self, request, *args, **kwargs):
+        chat_id = request.data.get('chat_id')
+        if not chat_id:
+            return Response({'chat_id': "Field chat_id can't be empty"}, status=status.HTTP_400_BAD_REQUEST)
+
+        Message.objects.filter(chat__chat_id=chat_id, is_read=False).update(is_read=True)
+
+        return Response({'message': 'Success'}, status=status.HTTP_200_OK)
+
