@@ -3,6 +3,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import generics, views
 from rest_framework.permissions import IsAuthenticated
@@ -28,12 +29,11 @@ class MessageAPIView(views.APIView):
     @action(['post'], detail=False)
     def post(self, request):
         ads_id = request.data.get('ads_id')
-
-        if not Advertisement.objects.filter(pk=ads_id).exists():
-            return Response({'message': 'The advertisement not found!'}, status=status.HTTP_400_BAD_REQUEST)
+        ads = get_object_or_404(Advertisement, pk=ads_id)
 
         user = request.user
-        chat_id = f'private-{ads_id}-{user.pk}'
+
+        chat_id = f'private-{ads_id}-{ads.owner_id}'
         message = request.data.get('message')
 
         chat = Chat.objects.get_or_create(chat_id=chat_id, advertisement_id=ads_id)[0]

@@ -99,6 +99,7 @@ class AdvertisementCreateView(generics.CreateAPIView):
 
         context_data = {
             'images': images,
+            'owner': request.user
         }
 
         serializer = self.get_serializer(data=data, context=context_data)

@@ -134,6 +134,8 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         Check that the start is before the stop.
         """
         images = self.context.get('images')
+        owner = self.context.get('owner')
+
         price = data.get('price')
         max_price = data.get('max_price')
 
@@ -143,6 +145,8 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
         if len(images) > 8:
             raise serializers.ValidationError({"images": "Images count can't be more 8!"})
+
+        data['owner'] = owner
 
         return data
 
