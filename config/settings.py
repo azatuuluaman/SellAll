@@ -17,6 +17,7 @@ from pathlib import Path
 
 from decouple import config
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -77,55 +78,46 @@ MIDDLEWARE = [
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+
     'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
+        'main_formatter': {
+            'format': '%(message)s - %(asctime)s [%(levelname)s]'
         },
     },
-    # 'filters': {
-    #     'special': {
-    #         '()': 'project.logging.SpecialFilter',
-    #         'foo': 'bar',
-    #     },
-    #     'require_debug_true': {
-    #         '()': 'django.utils.log.RequireDebugTrue',
-    #     },
-    # },
-    # 'handlers': {
-    #     'console': {
-    #         'level': 'INFO',
-    #         'filters': ['require_debug_true'],
-    #         'class': 'logging.StreamHandler',
-    #         'formatter': 'simple'
-    #     },
-    #     'mail_admins': {
-    #         'level': 'ERROR',
-    #         'class': 'django.utils.log.AdminEmailHandler',
-    #         'filters': ['special']
-    #     }
-    # },
-    # 'loggers': {
-    #     'django': {
-    #         'handlers': ['console'],
-    #         'propagate': True,
-    #     },
-    #     'django.request': {
-    #         'handlers': ['mail_admins'],
-    #         'level': 'ERROR',
-    #         'propagate': False,
-    #     },
-    #     'myproject.custom': {
-    #         'handlers': ['console', 'mail_admins'],
-    #         'level': 'INFO',
-    #         'filters': ['special']
-    #     }
-    # }
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'main_formatter',
+        },
+        'debug': {
+            'class': 'logging.FileHandler',
+            'filename': 'log/dubug.log',
+            'formatter': 'main_formatter',
+            'level': 'DEBUG'
+        },
+        'error': {
+            'class': 'logging.FileHandler',
+            'filename': 'log/error.log',
+            'formatter': 'main_formatter',
+            'level': 'ERROR'
+        },
+        'info': {
+            'class': 'logging.FileHandler',
+            'filename': 'log/info.log',
+            'formatter': 'main_formatter',
+            'level': 'INFO'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'error', 'info', 'debug'],
+            'propagate': True,
+            'level': 1,
+        },
+    },
 }
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
