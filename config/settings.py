@@ -75,53 +75,53 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-
-    'formatters': {
-        'main_formatter': {
-            'format': '%(message)s - %(asctime)s [%(levelname)s]'
-        },
-    },
-
-    'handlers': {
-        # 'console': {
-        #     'class': 'logging.StreamHandler',
-        #     'formatter': 'main_formatter',
-        # },
-        'debug': {
-            'class': 'logging.FileHandler',
-            'filename': 'log/dubug.log',
-            'formatter': 'main_formatter',
-            'level': 'DEBUG'
-        },
-        'error': {
-            'class': 'logging.FileHandler',
-            'filename': 'log/error.log',
-            'formatter': 'main_formatter',
-            'level': 'ERROR'
-        },
-        'info': {
-            'class': 'logging.FileHandler',
-            'filename': 'log/info.log',
-            'formatter': 'main_formatter',
-            'level': 'INFO'
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': [
-                # 'console',
-                'error',
-                'info',
-                'debug'
-            ],
-            'propagate': True,
-            'level': 1,
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#
+#     'formatters': {
+#         'main_formatter': {
+#             'format': '%(message)s - %(asctime)s [%(levelname)s]'
+#         },
+#     },
+#
+#     'handlers': {
+#         # 'console': {
+#         #     'class': 'logging.StreamHandler',
+#         #     'formatter': 'main_formatter',
+#         # },
+#         'debug': {
+#             'class': 'logging.FileHandler',
+#             'filename': 'log/dubug.log',
+#             'formatter': 'main_formatter',
+#             'level': 'DEBUG'
+#         },
+#         'error': {
+#             'class': 'logging.FileHandler',
+#             'filename': 'log/error.log',
+#             'formatter': 'main_formatter',
+#             'level': 'ERROR'
+#         },
+#         'info': {
+#             'class': 'logging.FileHandler',
+#             'filename': 'log/info.log',
+#             'formatter': 'main_formatter',
+#             'level': 'INFO'
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': [
+#                 # 'console',
+#                 'error',
+#                 'info',
+#                 'debug'
+#             ],
+#             'propagate': True,
+#             'level': 1,
+#         },
+#     },
+# }
 
 ROOT_URLCONF = 'config.urls'
 
