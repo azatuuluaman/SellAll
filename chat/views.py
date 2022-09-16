@@ -1,3 +1,4 @@
+from django.db.models import Q
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
@@ -51,7 +52,9 @@ class ChatAPIVIew(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Chat.objects.filter(advertisement__owner=self.request.user)
+        owner = Q(advertisement__owner=self.request.user)
+        sender = Q(messages__sender=self.request.user)
+        return Chat.objects.filter(owner | sender)
 
 
 class MessageReadAPIView(views.APIView):
