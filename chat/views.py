@@ -54,7 +54,7 @@ class ChatAPIVIew(generics.ListAPIView):
     def get_queryset(self):
         owner = Q(advertisement__owner=self.request.user)
         sender = Q(messages__sender=self.request.user)
-        return Chat.objects.filter(owner | sender)
+        return Chat.objects.filter(owner | sender).distinct()
 
 
 class MessageReadAPIView(views.APIView):
