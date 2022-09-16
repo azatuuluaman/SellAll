@@ -14,12 +14,12 @@ headers = {
 }
 
 
-def main_house():
+def main_house(start, end):
     all_advertisement_list = []
     child_category = ChildCategory.objects.all()
     print('Parsing start')
     print('##############')
-    for i in range(1, 20):
+    for i in range(start, end + 1):
         url = f'https://www.house.kg/kupit?page={i}'
         req = requests.get(url, headers=headers)
         src = req.text
@@ -65,7 +65,7 @@ def main_house():
                                          whatsapp_number=advertisement_number, owner=ads_owner,
                                          description=advertisement_description, type=settings.ACTIVE,
                                          child_category=child_category[random_num])
-        except AttributeError:
+        except Exception:
             continue
 
     print('End!')

@@ -8,22 +8,22 @@ class Command(BaseCommand):
     help = 'Start Parsing'
 
     def handle(self, *args, **options):
-        main_house()
+        start = options.get('start_page')
+        end = options.get('end_page')
+        main_house(start, end)
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '-s',
-            '--short',
-            action='store_true',
-            default=False,
-            help='Вывод короткого сообщения'
+            '-sp',
+            '--start_page',
+            type=int,
+            default=1
         )
         parser.add_argument(
-            '-p',
-            '--parser',
-            action='store_true',
-            default=False,
-            help='Вывод короткого сообщения'
+            '-ep',
+            '--end_page',
+            type=int,
+            default=10
         )
 
     def create_parser(self, prog_name, subcommand, **kwargs):

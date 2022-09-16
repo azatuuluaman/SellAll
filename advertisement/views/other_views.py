@@ -35,7 +35,3 @@ class ChildCategoryAPIView(generics.ListAPIView):
     serializer_class = ChildCategorySerializer
     queryset = ChildCategory.objects.all()
 
-
-class AdsSubscriberAPIView(generics.ListAPIView):
-    serializer_class = AdsSubscriberSerializer
-    queryset = AdsSubscriber.objects.all()
