@@ -118,6 +118,7 @@ class AdsTestCase(APITestCase):
         self.assertEqual(get_ads_data.get('child_category'), child_categories[0].name)
         self.assertEqual(get_ads_data.get('city'), cities[0].name)
         self.assertEqual(get_ads_data.get('type'), ads_create_data.get('type'))
+        self.assertEqual(get_ads_data.get('owner').get('id'), user.pk)
 
     def get_advertisement_endpoint(self, pk):
         url = f'{URL}{reverse("advertisement", kwargs={"pk": pk})}'

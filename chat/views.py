@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db.models import Q
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -8,10 +9,15 @@ from rest_framework.response import Response
 from rest_framework import generics, views
 from rest_framework.permissions import IsAuthenticated
 
+from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.exceptions import TokenError
+
 from advertisement.models import Advertisement
 from .models import Chat, Message
 from .pusher import pusher_client
 from .serializers import MessageSerializer, ChatSerializer
+
+User = get_user_model()
 
 
 class MessageAPIView(views.APIView):
@@ -75,3 +81,29 @@ class MessageReadAPIView(views.APIView):
 
         return Response({'message': 'Success'}, status=status.HTTP_200_OK)
 
+
+class PusherVerifyAPIView(views.APIView):
+    @swagger_auto_schema(method='post', request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        required=['version'],
+        properties={
+            'token': openapi.Schema(type=openapi.TYPE_STRING),
+        },
+        operation_description='Verify token'))
+    @action(methods=['POST'], detail=False)
+    def post(self, request, *args, **kwargs):
+        token = request.data.get('token')
+
+        if not token:
+            return Response({"token": "Токен обязательное поле"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            access_token = AccessToken(token)
+        except TokenError:
+            return Response({"detail": "Токен недействителен или просрочен", "code": "token_not_valid"},
+                            status=status.HTTP_401_UNAUTHORIZED)
+
+        User.objects.get(pk=access_token['user_id'])
+
+        return Response({"auth": token}, status=status.HTTP_200_OK)
