@@ -161,7 +161,7 @@ class AdsComment(models.Model):
     modified_at = models.DateTimeField('Последняя дата изменения', auto_now=True)
 
     def __str__(self):
-        return f'Comment {self.text} by {self.user}'
+        return f'Comment {self.advertisement} by {self.user}'
 
     def children(self):
         return AdsComment.objects.filter(parent=self)

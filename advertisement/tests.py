@@ -10,6 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .management.commands import dump_categories
 from .management.commands import parse
+
 from .models import (
     City,
     Category,
@@ -67,51 +68,60 @@ class AdsTestCase(APITestCase):
             response = self.client.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_ads_complex(self):
-        self.create_super_user(self.user_data)
-        self.create_cities()
-        self.create_categories_and_children()
-
-        user = self.get_super_user()
-        token = RefreshToken.for_user(user)
-
-        self.client.defaults['HTTP_AUTHORIZATION'] = f'Bearer {token.access_token}'
-
-        cities = self.get_cities()
-        categories = self.get_categories()
-        child_categories = self.get_child_categories()
-
+    def generate_ads_data(self, child_categories, user, city):
         ads_create_data = {
             'name': 'Ads #1',
             'price': 15000,
             'max_price': 50000,
             'description': 'Ads #1',
             'whatsapp_number': '+996505117733',
-            'city': 1,
+            'city': city,
             'email': user.email,
             'type': settings.ACTIVE,
             'child_category': child_categories[0].pk,
             'owner': user.pk,
         }
+        return ads_create_data
+
+    def login(self, user):
+        token = RefreshToken.for_user(user)
+        self.client.defaults['HTTP_AUTHORIZATION'] = f'Bearer {token.access_token}'
+
+    def test_ads_complex(self):
+        self.create_super_user(self.user_data)
+        self.create_cities()
+        self.create_categories_and_children()
+
+        user = self.get_super_user()
+        self.login(user)
+
+        cities = self.get_cities()
+        categories = self.get_categories()
+        child_categories = self.get_child_categories()
+
+        ads_create_data = self.generate_ads_data(child_categories, user, cities[0].pk)
 
         create_response = self.create_ads_endpoint(ads_create_data)
         self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
 
         parser = parse.Command()
 
-        # options = {
-        #     'start_page': 1,
-        #     'end_page': 2
-        # }
-        #
-        # parser.handle(**options)
+        options = {
+            'start_page': 1,
+            'end_page': 2
+        }
+
+        parser.handle(**options)
 
         advertisement_count = self.get_ads().filter(type=settings.ACTIVE).count()
         list_response = self.ads_list_endpoint()
         self.assertEqual(list_response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(list_response.content).get('count'), advertisement_count)
 
-        get_ads_response = self.get_ads_endpoint(pk=1)
+        first_ads = Advertisement.objects.first()
+
+        get_ads_response = self.get_ads_endpoint(pk=first_ads.pk)
+
         get_ads_data = json.loads(get_ads_response.content)
         self.assertEqual(get_ads_response.status_code, status.HTTP_200_OK)
         self.assertEqual(get_ads_data.get('name'), ads_create_data.get('name'))
@@ -124,21 +134,114 @@ class AdsTestCase(APITestCase):
         self.assertEqual(get_ads_data.get('type'), ads_create_data.get('type'))
         self.assertEqual(get_ads_data.get('owner').get('id'), user.pk)
 
-        users_ads_response = self.get_users_ads()
+        users_ads_response = self.get_users_ads_endpoint()
+
         response_data = json.loads(get_ads_response.content)
         response_count = response_data.get('count')
+
         self.assertEqual(users_ads_response.status_code, status.HTTP_200_OK)
+
         if response_count:
             self.assertEqual(response_count, Advertisement.objects.filter(owner=user).count())
 
-    def get_users_ads(self):
+        delete_ads_response = self.delete_ads_endpoint(pk=first_ads.pk)
+        self.assertEqual(delete_ads_response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_statistic(self):
+        self.create_super_user(self.user_data)
+        self.create_cities()
+        self.create_categories_and_children()
+
+        user = self.get_super_user()
+        self.login(user)
+
+        cities = self.get_cities()
+        child_categories = self.get_child_categories()
+
+        ads_create_data = self.generate_ads_data(child_categories, user, cities[0])
+
+        ads = Advertisement.objects.create(**ads_create_data)
+
+        statistic_response = self.get_statistic_endpoint(pk=ads.pk)
+        self.assertEqual(statistic_response.status_code, status.HTTP_200_OK)
+
+    def test_comment(self):
+        self.create_super_user(self.user_data)
+        self.create_cities()
+        self.create_categories_and_children()
+
+        user = self.get_super_user()
+        self.login(user)
+
+        child_categories = self.get_child_categories()
+
+        ads_create_data = self.generate_ads_data(child_categories, user)
+
+        ads = Advertisement.objects.create(**ads_create_data)
+
+        comment_data = {
+            'id': 1,
+            'advertisement': ads.pk,
+            'text': 'Test comment',
+        }
+
+        create_response = self.comment_create_endpoint(comment_data)
+        self.assertEqual(create_response.status_code, status.HTTP_200_OK)
+
+        get_response = self.get_comment_rud(comment_data[1])
+        self.assertEqual(get_response.status_code, status.HTTP_200_OK)
+
+        comment_data['text'] = 'Test comment update'
+
+        update_response = self.update_comment_rud(comment_data[1], comment_data)
+        self.assertEqual(update_response.status_code, status.HTTP_200_OK)
+
+        delete_response = self.delete_comment_rud(comment_data.get('id'))
+        self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def get_comment_rud(self, pk):
+        url = generate_url('comment_rud', kwargs={'pk': pk})
+        response = self.client.get(url)
+        return response
+
+    def update_comment_rud(self, pk, data):
+        url = generate_url('comment_rud', kwargs={'pk': pk, 'data': data})
+        response = self.client.put(url)
+        return response
+
+    def delete_comment_rud(self, pk):
+        url = generate_url('comment_rud', kwargs={'pk': pk})
+        response = self.client.delete(url)
+        return response
+
+    def comment_create_endpoint(self, data):
+        url = generate_url('comment_create', kwargs={'data': data})
+        response = self.client.post(url, data)
+        return response
+
+    def get_statistic_endpoint(self, pk):
+        url = generate_url('statistic', kwargs={"pk": pk})
+        response = self.client.get(url)
+        return response
+
+    def get_users_ads_endpoint(self):
         url = generate_url('users_ads')
         response = self.client.get(url)
         return response
 
     def get_ads_endpoint(self, pk):
-        url = generate_url("advertisement", kwargs={"pk": pk})
+        url = generate_url("ads", kwargs={"pk": pk})
         response = self.client.get(url)
+        return response
+
+    def patch_ads_endpoint(self, pk, data):
+        url = generate_url("ads", kwargs={"pk": pk, "data": data})
+        response = self.client.patch(url)
+        return response
+
+    def delete_ads_endpoint(self, pk):
+        url = generate_url("ads", kwargs={"pk": pk})
+        response = self.client.delete(url)
         return response
 
     def create_ads_endpoint(self, data):

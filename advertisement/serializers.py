@@ -35,6 +35,13 @@ class RecursiveSerializer(serializers.Serializer):
 
 class AdsCommentSerializer(serializers.ModelSerializer):
     children = RecursiveSerializer(many=True, read_only=True)
+    parent = serializers.IntegerField(required=False)
+
+    def validate_parent(self, parent):
+        if parent == 0:
+            return None
+
+        return parent
 
     class Meta:
         model = AdsComment
