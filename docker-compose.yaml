@@ -29,7 +29,7 @@ services:
       - db
       - redis
 
-  celery-worker:
+  celery:
     restart: always
     build:
       context: .
