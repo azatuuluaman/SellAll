@@ -22,6 +22,10 @@ User = get_user_model()
 URL = 'http://localhost:8000'
 
 
+def generate_url(url_name, kwargs=None):
+    return f'{URL}{reverse(url_name, kwargs=kwargs)}'
+
+
 class AdsTestCase(APITestCase):
     city_list = ['Bishkek', 'Osh', 'Jalal-Abad ', 'Karakol ', 'Tokmok', 'Kara-Balta']
     user_data = {
@@ -32,7 +36,7 @@ class AdsTestCase(APITestCase):
     }
 
     def test_cities(self):
-        url = f'{URL}{reverse("cities")}'
+        url = generate_url("cities")
         self.create_cities()
         query_count = self.get_cities().count()
         response = self.client.get(url)
@@ -40,7 +44,7 @@ class AdsTestCase(APITestCase):
         self.assertEqual(json.loads(response.content).get('count'), query_count)
 
     def test_categories(self):
-        url = f'{URL}{reverse("categories")}'
+        url = generate_url("categories")
         self.create_categories_and_children()
         category_count = self.get_categories().count()
         response = self.client.get(url)
@@ -48,7 +52,7 @@ class AdsTestCase(APITestCase):
         self.assertEqual(json.loads(response.content).get('count'), category_count)
 
     def test_child_categories(self):
-        url = f'{URL}{reverse("child_categories")}'
+        url = generate_url("child_categories")
         self.create_categories_and_children()
         children_count = self.get_child_categories().count()
         response = self.client.get(url)
@@ -59,7 +63,7 @@ class AdsTestCase(APITestCase):
         self.create_categories_and_children()
 
         for category in self.get_categories():
-            url = f'{URL}{reverse("category", kwargs={"pk": category.pk})}'
+            url = generate_url("category", kwargs={"pk": category.pk})
             response = self.client.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -102,14 +106,14 @@ class AdsTestCase(APITestCase):
         #
         # parser.handle(**options)
 
-        advertisement_count = self.get_ads().count()
-        list_response = self.list_ads_endpoint()
+        advertisement_count = self.get_ads().filter(type=settings.ACTIVE).count()
+        list_response = self.ads_list_endpoint()
         self.assertEqual(list_response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(list_response.content).get('count'), advertisement_count)
 
-        get_response = self.get_advertisement_endpoint(pk=1)
-        get_ads_data = json.loads(get_response.content)
-        self.assertEqual(get_response.status_code, status.HTTP_200_OK)
+        get_ads_response = self.get_ads_endpoint(pk=1)
+        get_ads_data = json.loads(get_ads_response.content)
+        self.assertEqual(get_ads_response.status_code, status.HTTP_200_OK)
         self.assertEqual(get_ads_data.get('name'), ads_create_data.get('name'))
         self.assertEqual(get_ads_data.get('price'), ads_create_data.get('price'))
         self.assertEqual(get_ads_data.get('max_price'), ads_create_data.get('max_price'))
@@ -120,18 +124,30 @@ class AdsTestCase(APITestCase):
         self.assertEqual(get_ads_data.get('type'), ads_create_data.get('type'))
         self.assertEqual(get_ads_data.get('owner').get('id'), user.pk)
 
-    def get_advertisement_endpoint(self, pk):
-        url = f'{URL}{reverse("advertisement", kwargs={"pk": pk})}'
+        users_ads_response = self.get_users_ads()
+        response_data = json.loads(get_ads_response.content)
+        response_count = response_data.get('count')
+        self.assertEqual(users_ads_response.status_code, status.HTTP_200_OK)
+        if response_count:
+            self.assertEqual(response_count, Advertisement.objects.filter(owner=user).count())
+
+    def get_users_ads(self):
+        url = generate_url('users_ads')
+        response = self.client.get(url)
+        return response
+
+    def get_ads_endpoint(self, pk):
+        url = generate_url("advertisement", kwargs={"pk": pk})
         response = self.client.get(url)
         return response
 
     def create_ads_endpoint(self, data):
-        url = f'{URL}{reverse("ads_create")}'
+        url = generate_url("ads_create")
         response = self.client.post(url, data=data)
         return response
 
-    def list_ads_endpoint(self):
-        url = f'{URL}{reverse("ads_list")}'
+    def ads_list_endpoint(self):
+        url = generate_url("ads_list")
         response = self.client.get(url)
         return response
 

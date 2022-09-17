@@ -59,6 +59,7 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField(read_only=True)
     subscribers = serializers.SerializerMethodField(read_only=True)
     is_favorite = serializers.SerializerMethodField(read_only=True)
+    category = serializers.CharField(source='child_category.category.name', read_only=True)
     owner = UserSerializer(read_only=True)
 
     def get_is_favorite(self, obj):
@@ -112,6 +113,7 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
             'modified_at',
             'disable_date',
             'city',
+            'category',
             'child_category',
             'subscribers',
             'is_favorite',

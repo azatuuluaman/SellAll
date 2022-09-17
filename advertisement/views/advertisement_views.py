@@ -1,27 +1,22 @@
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.db.models import Q
 
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_yasg import openapi
 
 from rest_framework import generics, status, views
-from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBackend
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, SAFE_METHODS
 from rest_framework.decorators import action
 
 from drf_yasg.utils import swagger_auto_schema
 
+from advertisement.filters import AdvertisementCustomFilterBackend
 from advertisement.swagger_scheme import (
-    category_id_query,
-    has_image_query,
-    price_query,
-    max_price_query,
-    limit_query,
+    AdvertisementQuerySerializer,
     child_category_id_query,
-    cities_query,
+    limit_query
 )
 
 from advertisement.permissions import IsOwnerOrSuperUser
@@ -38,52 +33,25 @@ from advertisement.models import (
     Advertisement,
     ComplainingForAds
 )
+
 from advertisement.utils import Redis, get_client_ip
 
 
-class AdvertisementCustomFilterBackend(BaseFilterBackend):
-    """
-    Filter that only allows users to see their own objects.
-    """
+class AdvertisementListView(generics.ListAPIView):
+    serializer_class = AdvertisementRetrieveSerializer
+    permission_classes = [AllowAny]
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter, AdvertisementCustomFilterBackend)
+    filterset_fields = ('child_category_id', 'disable_date')
+    search_fields = ('name',)
+    ordering_fields = ('created_at', 'price')
 
-    def filter_queryset(self, request, queryset, view):
-        category_id = request.query_params.get('category_id')
-        price = request.query_params.get('price')
-        max_price = request.query_params.get('max_price')
-        has_image = request.query_params.get('has_image')
-        cities = request.query_params.get('cities')
+    @swagger_auto_schema(method='get', query_serializer=AdvertisementQuerySerializer)
+    @action(['get'], detail=False)
+    def get(self, request, *args, **kwargs):
+        return super(AdvertisementListView, self).get(request)
 
-        filters = {}
-
-        if category_id:
-            filters['child_category__category_id'] = category_id
-
-        if has_image == 'true':
-            filters['images__isnull'] = False
-
-        if cities:
-            filters['city__in'] = cities.split(',')
-
-        if price and max_price:
-            min_price_filter = Q(price__gte=price)
-            max_price_filter = Q(price__lte=max_price)
-            queryset_1 = queryset.filter(min_price_filter & max_price_filter, **filters)
-            queryset_2 = queryset_1.filter(max_price__lte=max_price, max_price__isnull=False)
-            queryset = queryset_1 | queryset_2
-            return queryset.distinct()
-        else:
-            if price:
-                filters['price__gte'] = price
-
-            if max_price:
-                min_price = Q(price__lte=max_price)
-                max_price = Q(max_price__lte=max_price)
-
-                queryset = queryset.filter(min_price | max_price).filter(**filters).distinct()
-                return queryset
-
-        queryset = queryset.filter(**filters).distinct()
-
+    def get_queryset(self):
+        queryset = Advertisement.objects.filter(type=settings.ACTIVE)
         return queryset
 
 
@@ -131,26 +99,6 @@ class AdvertisementRUDView(generics.RetrieveUpdateDestroyAPIView):
 
         serializer = self.get_serializer(instance, context={'request': self.request})
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class AdvertisementListView(generics.ListAPIView):
-    serializer_class = AdvertisementRetrieveSerializer
-    permission_classes = [AllowAny]
-    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter, AdvertisementCustomFilterBackend)
-    filterset_fields = ('child_category_id', 'disable_date')
-    search_fields = ('name',)
-    ordering_fields = ('created_at', 'price')
-
-    @swagger_auto_schema(method='get', manual_parameters=[
-        category_id_query, has_image_query, price_query, max_price_query, cities_query
-    ])
-    @action(['get'], detail=False)
-    def get(self, request, *args, **kwargs):
-        return super(AdvertisementListView, self).get(request)
-
-    def get_queryset(self):
-        queryset = Advertisement.objects.filter(type=settings.ACTIVE)
-        return queryset
 
 
 class UserAdvertisementListView(generics.ListAPIView):

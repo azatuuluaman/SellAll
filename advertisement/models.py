@@ -106,7 +106,7 @@ class Subscription(models.Model):
 
 class AdsSubscriber(models.Model):
     advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, verbose_name='Объявление', blank=True,
-                                      null=True)
+                                      null=True, related_name='subscriber')
     subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, verbose_name='Подписка', blank=True,
                                      null=True)
     start_date = models.DateTimeField('Дата начала')
@@ -174,7 +174,7 @@ class AdsComment(models.Model):
 
     class Meta:
         verbose_name = 'Коментарий'
-        verbose_name_plural = 'Кометарии'
+        verbose_name_plural = 'Коментарии'
         ordering = ['created_on']
 
 
