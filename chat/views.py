@@ -9,9 +9,6 @@ from rest_framework.response import Response
 from rest_framework import generics, views
 from rest_framework.permissions import IsAuthenticated
 
-from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework_simplejwt.exceptions import TokenError
-
 from advertisement.models import Advertisement
 from .models import Chat, Message
 from .pusher import pusher_client
@@ -39,7 +36,7 @@ class MessageAPIView(views.APIView):
 
         user = request.user
 
-        chat_id = f'private-{ads_id}-{ads.owner_id}'
+        chat_id = f'{ads.pk}-{ads.owner_id}'
         message = request.data.get('message')
 
         chat = Chat.objects.get_or_create(chat_id=chat_id, advertisement_id=ads_id)[0]
@@ -74,36 +71,12 @@ class MessageReadAPIView(views.APIView):
     @action(methods=['POST'], detail=False)
     def post(self, request, *args, **kwargs):
         chat_id = request.data.get('chat_id')
+
         if not chat_id:
             return Response({'chat_id': "Field chat_id can't be empty"}, status=status.HTTP_400_BAD_REQUEST)
 
-        Message.objects.filter(chat__chat_id=chat_id, is_read=False).update(is_read=True)
+        messages = Message.objects.exclude(sender=request.user.pk)
+
+        messages.filter(chat__chat_id=chat_id, is_read=False).update(is_read=True)
 
         return Response({'message': 'Success'}, status=status.HTTP_200_OK)
-
-
-class PusherVerifyAPIView(views.APIView):
-    @swagger_auto_schema(method='post', request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        required=['version'],
-        properties={
-            'token': openapi.Schema(type=openapi.TYPE_STRING),
-        },
-        operation_description='Verify token'))
-    @action(methods=['POST'], detail=False)
-    def post(self, request, *args, **kwargs):
-        token = request.data.get('token')
-
-        if not token:
-            return Response({"token": "Токен обязательное поле"},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            access_token = AccessToken(token)
-        except TokenError:
-            return Response({"detail": "Токен недействителен или просрочен", "code": "token_not_valid"},
-                            status=status.HTTP_401_UNAUTHORIZED)
-
-        User.objects.get(pk=access_token['user_id'])
-
-        return Response({"auth": token}, status=status.HTTP_200_OK)

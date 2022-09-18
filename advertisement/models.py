@@ -80,10 +80,7 @@ class Advertisement(models.Model):
             self.disable_date = None
 
         if self._state.adding:
-            if self.owner:
-                self.slug = slugify(f'{self.name}-{self.owner.pk}', allow_unicode=True)
-            else:
-                self.slug = slugify(f'{self.name}-{random.randint(1000, 9999)}', allow_unicode=True)
+            self.slug = slugify(f'{self.name}-{random.randint(1000, 9999)}', allow_unicode=True)
 
         super().save(*args, **kwargs)
 
