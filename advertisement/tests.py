@@ -8,8 +8,9 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from .parser.house_kg import parse_house_kg
+
 from .management.commands import dump_categories
-from .management.commands import parse
 
 from .models import (
     City,
@@ -68,25 +69,6 @@ class AdsTestCase(APITestCase):
             response = self.client.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def generate_ads_data(self, child_categories, user, city):
-        ads_create_data = {
-            'name': 'Ads #1',
-            'price': 15000,
-            'max_price': 50000,
-            'description': 'Ads #1',
-            'whatsapp_number': '+996505117733',
-            'city': city,
-            'email': user.email,
-            'type': settings.ACTIVE,
-            'child_category': child_categories[0].pk,
-            'owner': user.pk,
-        }
-        return ads_create_data
-
-    def login(self, user):
-        token = RefreshToken.for_user(user)
-        self.client.defaults['HTTP_AUTHORIZATION'] = f'Bearer {token.access_token}'
-
     def test_ads_complex(self):
         self.create_super_user(self.user_data)
         self.create_cities()
@@ -104,14 +86,7 @@ class AdsTestCase(APITestCase):
         create_response = self.create_ads_endpoint(ads_create_data)
         self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
 
-        parser = parse.Command()
-
-        options = {
-            'start_page': 1,
-            'end_page': 2
-        }
-
-        parser.handle(**options)
+        parse_house_kg(1, 2)
 
         advertisement_count = self.get_ads().filter(type=settings.ACTIVE).count()
         list_response = self.ads_list_endpoint()
@@ -280,3 +255,22 @@ class AdsTestCase(APITestCase):
 
     def get_super_user(self):
         return User.objects.get(email=self.user_data.get('email'))
+
+    def generate_ads_data(self, child_categories, user, city):
+        ads_create_data = {
+            'name': 'Ads #1',
+            'price': 15000,
+            'max_price': 50000,
+            'description': 'Ads #1',
+            'whatsapp_number': '+996505117733',
+            'city': city,
+            'email': user.email,
+            'type': settings.ACTIVE,
+            'child_category': child_categories[0].pk,
+            'owner': user.pk,
+        }
+        return ads_create_data
+
+    def login(self, user):
+        token = RefreshToken.for_user(user)
+        self.client.defaults['HTTP_AUTHORIZATION'] = f'Bearer {token.access_token}'

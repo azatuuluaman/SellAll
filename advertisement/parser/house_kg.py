@@ -14,7 +14,7 @@ headers = {
 }
 
 
-def main_house(start, end):
+def parse_house_kg(start, end):
     all_advertisement_list = []
     child_category = ChildCategory.objects.all()
     print('Parsing start')
