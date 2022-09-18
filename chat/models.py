@@ -6,6 +6,7 @@ from advertisement.models import Advertisement
 
 class Chat(models.Model):
     chat_id = models.CharField(verbose_name='Чат id', unique=True, db_index=True, max_length=50)
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, null=True, related_name='chats')
 
     def __str__(self):

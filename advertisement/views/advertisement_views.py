@@ -35,7 +35,6 @@ from advertisement.models import (
 )
 
 from advertisement.utils import Redis, get_client_ip
-from chat.models import Chat
 
 
 class AdvertisementListView(generics.ListAPIView):
@@ -73,11 +72,8 @@ class AdvertisementCreateView(generics.CreateAPIView):
 
         serializer = self.get_serializer(data=data, context=context_data)
         serializer.is_valid(raise_exception=True)
-        ads = serializer.save()
+        serializer.save()
 
-        chat_id = f'{ads.pk}-{ads.owner_id}'
-
-        Chat.objects.create(chat_id=chat_id, advertisement=ads)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 

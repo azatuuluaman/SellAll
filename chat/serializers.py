@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from advertisement.serializers import AdvertisementRetrieveSerializer
 from .models import Message, Chat
 
 

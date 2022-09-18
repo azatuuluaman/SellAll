@@ -36,7 +36,7 @@ class MessageAPIView(views.APIView):
 
         user = request.user
 
-        chat_id = f'{ads.pk}-{ads.owner_id}'
+        chat_id = f'{ads.pk}-{ads.owner_id}-{user.pk}'
         message = request.data.get('message')
 
         chat = Chat.objects.get_or_create(chat_id=chat_id, advertisement_id=ads_id)[0]
@@ -46,6 +46,9 @@ class MessageAPIView(views.APIView):
         data = serializer.data
 
         pusher_client.trigger(chat.chat_id, 'message', data)
+
+        if Message.objects.filter(chat=chat).count() == 1:
+            pusher_client.trigger(f'my-chats-count-{user}', 'message', f'{chat.chat_id}')
 
         return Response(data, status=status.HTTP_200_OK)
 
@@ -80,3 +83,12 @@ class MessageReadAPIView(views.APIView):
         messages.filter(chat__chat_id=chat_id, is_read=False).update(is_read=True)
 
         return Response({'message': 'Success'}, status=status.HTTP_200_OK)
+
+
+class MyChatsAPIView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        count = Chat.objects.filter(advertisement__owner=user).count()
+        return Response({'chats_count': count}, status=status.HTTP_200_OK)
