@@ -26,6 +26,8 @@ API_HEAD_URL = f'api/v1'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('__debug__/', include('debug_toolbar.urls')),
+
     path(f'{API_HEAD_URL}/social-auth/', include('social_auth.urls'), name='social'),
     path(f'{API_HEAD_URL}/token/', TokenObtainPairView.as_view(), name='login'),
     path(f'{API_HEAD_URL}/token/refresh/', TokenRefreshView.as_view(), name='refresh'),

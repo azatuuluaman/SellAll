@@ -34,9 +34,6 @@ from advertisement.models import (
     ComplainingForAds
 )
 
-from advertisement.utils import Redis, get_client_ip
-
-
 class AdvertisementListView(generics.ListAPIView):
     serializer_class = AdvertisementRetrieveSerializer
     permission_classes = [AllowAny]
@@ -88,19 +85,6 @@ class AdvertisementRUDView(generics.RetrieveUpdateDestroyAPIView):
 
         return [permission() for permission in self.permission_classes]
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-
-        redis = Redis()
-        ads_id = instance.pk
-        date = timezone.now().date().strftime('%d.%m.%Y')
-        client_ip = get_client_ip(request)
-
-        redis.add_views(ads_id, date, client_ip)
-
-        serializer = self.get_serializer(instance, context={'request': self.request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 class UserAdvertisementListView(generics.ListAPIView):
     """You can filter by Активный - На проверке - Неактивный. And search by name!"""
@@ -132,6 +116,7 @@ class SimularAdsView(views.APIView):
         child_category = get_object_or_404(ChildCategory, pk=child_category_id)
 
         advertisement = Advertisement.objects.filter(child_category=child_category)[:limit]
+
         ads_count = advertisement.count()
 
         if ads_count < limit:

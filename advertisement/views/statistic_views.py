@@ -17,7 +17,7 @@ class AddPhoneView(views.APIView):
 
         redis = Redis()
         date = timezone.now().date().strftime('%d.%m.%Y')
-        client_ip = get_client_ip(request)
+        client_ip = request.user.ip
         redis.add_phone_views(ads_id, date, client_ip)
 
         return Response({'message': 'Success'}, status=status.HTTP_200_OK)

@@ -7,7 +7,6 @@ from .serializers import (
     FeedBackSerializer,
     HelpSerializer,
     HelpCategorySerializer,
-    # FooterSerializer
 )
 
 from .models import (
@@ -47,24 +46,3 @@ class HelpCategoryAPIView(generics.ListAPIView):
     serializer_class = HelpCategorySerializer
     queryset = HelpCategory.objects.all()
     permission_classes = [AllowAny]
-
-
-# class FooterAPIView(views.APIView):
-#     def get(self, request):
-#         categories = Category.objects.all()
-#         cities = City.objects.all()
-#         apps = SocialMedia.objects.filter(type=settings.APP)
-#         networks = SocialMedia.objects.filter(type=settings.SOCIAL_NETWORK)
-#
-#         data = [
-#             {
-#                 'category': categories,
-#                 'city': cities,
-#                 'app': apps,
-#                 'network': networks
-#             }
-#         ]
-#
-#         serializer = FooterSerializer(data=data, many=True)
-#         serializer.is_valid(raise_exception=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)

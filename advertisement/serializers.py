@@ -49,12 +49,11 @@ class AdsCommentSerializer(serializers.ModelSerializer):
 
 
 class AdsSubscriberSerializer(serializers.ModelSerializer):
-    advertisement = serializers.CharField(source='advertisement.name')
     subscription = serializers.CharField(source='subscription.name')
 
     class Meta:
         model = AdsSubscriber
-        fields = '__all__'
+        fields = ('subscription', 'start_date', 'end_date')
 
 
 class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
@@ -84,7 +83,7 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
 
     def get_subscribers(self, obj):
         date = timezone.now()
-        instance = AdsSubscriber.objects.filter(Q(start_date__gte=date) & Q(end_date__lte=date), advertisement=obj)
+        instance = AdsSubscriber.objects.filter(advertisement=obj, end_date__gte=date)
         return AdsSubscriberSerializer(instance, many=True).data
 
     def get_comments(self, obj):
