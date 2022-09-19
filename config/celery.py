@@ -15,5 +15,10 @@ app.conf.beat_schedule = {
     'send_ads_for_emails': {
         'task': 'user.tasks.send_ads_for_emails',
         'schedule': crontab(0, 0)
+    },
+    'parse_house_kg': {
+        'task': 'user.tasks.send_ads_for_emails',
+        'schedule': crontab(hour='*/1'),
+        'args': (1, 5)
     }
 }

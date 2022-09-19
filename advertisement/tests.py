@@ -24,7 +24,7 @@ User = get_user_model()
 URL = 'http://localhost:8000'
 
 
-def generate_url(url_name, kwargs=None):
+def generate_url(url_name: str, kwargs: dict=None):
     return f'{URL}{reverse(url_name, kwargs=kwargs)}'
 
 
