@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from advertisement.models import Category, City
 from .models import Site, SocialMedia, FeedBack, Help, HelpCategory
 
 
@@ -46,7 +45,6 @@ class HelpCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = HelpCategory
         fields = ('id', 'name', 'help')
-
 
 # class FooterCategorySerializer(serializers.ModelSerializer):
 #     class Meta:

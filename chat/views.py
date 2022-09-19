@@ -6,13 +6,13 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from rest_framework import generics, views
+from rest_framework import views
 from rest_framework.permissions import IsAuthenticated
 
 from advertisement.models import Advertisement
 from .models import Chat, Message
 from .pusher import pusher_client
-from .serializers import MessageSerializer, ChatSerializer
+from .serializers import MessageSerializer, ChatListSerializer, ChatSerializer
 
 User = get_user_model()
 
@@ -48,14 +48,18 @@ class MessageAPIView(views.APIView):
         pusher_client.trigger(chat.chat_id, 'message', data)
 
         if Message.objects.filter(chat=chat).count() == 1:
-            pusher_client.trigger(f'my-chats-count-{user}', 'message', f'{chat.chat_id}')
+            pusher_client.trigger(f'my-chats-count-{user.pk}', 'message', f'{chat.chat_id}')
 
         return Response(data, status=status.HTTP_200_OK)
 
 
-class ChatAPIVIew(generics.ListAPIView):
-    serializer_class = ChatSerializer
+class ChatAPIVIew(views.APIView):
+    serializer_class = ChatListSerializer
     permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        ChatSerializer(queryset)
 
     def get_queryset(self):
         owner = Q(advertisement__owner=self.request.user)
@@ -90,5 +94,5 @@ class MyChatsAPIView(views.APIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        count = Chat.objects.filter(advertisement__owner=user).count()
-        return Response({'chats_count': count}, status=status.HTTP_200_OK)
+        # count = Chat.objects.filter(advertisement__owner=user).count()
+        return Response({'channel': f'my-chats-count-{user.pk}'}, status=status.HTTP_200_OK)

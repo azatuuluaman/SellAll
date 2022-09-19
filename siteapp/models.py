@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.forms.models import ValidationError
 
 from cloudinary.models import CloudinaryField
 
@@ -8,7 +9,15 @@ class Site(models.Model):
     name = models.CharField('Название сайта', max_length=100)
     logo = CloudinaryField('Логотип')
     privacy_policy_text = models.TextField('Политика конфиденциальности текст', max_length=5000)
+    feed_back_text = models.TextField('Связаться с администрацией, текст')
     copyright = models.CharField('Авторские права', max_length=100)
+
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            if len(Site.objects.all()) > 0:
+                raise ValidationError('Site already exists!')
+
+        super(Site, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -73,4 +82,3 @@ class Help(models.Model):
     class Meta:
         verbose_name = 'Помощь'
         verbose_name_plural = 'Помощь'
-

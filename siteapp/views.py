@@ -46,3 +46,4 @@ class HelpCategoryAPIView(generics.ListAPIView):
     serializer_class = HelpCategorySerializer
     queryset = HelpCategory.objects.all()
     permission_classes = [AllowAny]
+

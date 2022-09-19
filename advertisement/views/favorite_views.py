@@ -60,6 +60,11 @@ class FavoriteAPIView(views.APIView):
         if not ads_id:
             return Response({"advertisement_id": "Can't be empty!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        Favorite.objects.filter(advertisement_id=ads_id, user=request.user).delete()
+        favorites = Favorite.objects.filter(advertisement_id=ads_id, user=request.user)
+
+        if not favorites.exists():
+            return Response({"favorites": "Not found!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        favorites[0].advertisements.remove(ads_id)
 
         return Response({"message": "Success deleted!"}, status=status.HTTP_200_OK)
