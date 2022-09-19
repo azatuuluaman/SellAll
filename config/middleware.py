@@ -62,11 +62,15 @@ class ViewMiddleware:
         return response
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if view_func.cls == AdvertisementRUDView and request.method == 'GET':
-            pk = view_kwargs.get('pk', None)
-            instance = get_object_or_404(Advertisement, pk=pk)
-            redis = Redis()
-            ads_id = instance.pk
-            date = timezone.now().date().strftime('%d.%m.%Y')
-            client_ip = request.user.ip
-            redis.add_views(ads_id, date, client_ip)
+        try:
+            if view_func.cls == AdvertisementRUDView and request.method == 'GET':
+                pk = view_kwargs.get('pk', None)
+                instance = get_object_or_404(Advertisement, pk=pk)
+                redis = Redis()
+                ads_id = instance.pk
+                date = timezone.now().date().strftime('%d.%m.%Y')
+                client_ip = request.user.ip
+                redis.add_views(ads_id, date, client_ip)
+
+        except AttributeError:
+            pass

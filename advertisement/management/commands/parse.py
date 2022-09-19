@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from argparse import RawTextHelpFormatter
 
-from advertisement.parser.house_kg import parse_house_kg
+from advertisement.parser.tasks import parse_house_kg
 
 
 class Command(BaseCommand):
@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         start = options.get('start_page')
         end = options.get('end_page')
-        parse_house_kg(start, end)
+        parse_house_kg.delay(start, end)
 
     def add_arguments(self, parser):
         parser.add_argument(

@@ -1,11 +1,12 @@
 import random
-
 import requests
+
 from bs4 import BeautifulSoup
 from django.utils.text import slugify
 
 from advertisement.models import Advertisement, ChildCategory
 from config import settings
+from config.celery import app
 from user.models import User
 
 headers = {
@@ -14,11 +15,10 @@ headers = {
 }
 
 
+@app.task
 def parse_house_kg(start, end):
     all_advertisement_list = []
     child_category = ChildCategory.objects.all()
-    print('Parsing start')
-    print('##############')
     for i in range(start, end + 1):
         url = f'https://www.house.kg/kupit?page={i}'
         req = requests.get(url, headers=headers)
@@ -36,8 +36,6 @@ def parse_house_kg(start, end):
 
             all_advertisement_list.append(item_href)
 
-    print('Add data to database')
-    print('##############')
     for url in all_advertisement_list:
         req = requests.get(url, headers=headers)
         src = req.text
@@ -67,5 +65,3 @@ def parse_house_kg(start, end):
                                          child_category=child_category[random_num])
         except Exception:
             continue
-
-    print('End!')
