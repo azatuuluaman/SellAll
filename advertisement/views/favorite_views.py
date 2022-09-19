@@ -14,7 +14,7 @@ class FavoriteAPIView(views.APIView):
 
     def get(self, request, *args, **kwargs):
         """ Return favorites advertisement list"""
-        advertisement = Advertisement.objects.filter(favorites__user=request.user)
+        advertisement = Advertisement.objects.prefetch_related('favorites').filter(favorites__user=request.user)
         serializer = AdvertisementRetrieveSerializer(advertisement, many=True, context={'request': request})
         return Response({'count': advertisement.count(), 'results': serializer.data}, status=status.HTTP_200_OK)
 
@@ -34,12 +34,13 @@ class FavoriteAPIView(views.APIView):
         if not ads_id:
             return Response({"ads_id": "Can't be empty!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        ads = Advertisement.objects.filter(pk=ads_id)
+        ads = Advertisement.objects.prefetch_related('favorites').filter(pk=ads_id)
 
         if not ads.exists():
             return Response({"ads_id": "Advertisement not found!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        Favorite.objects.get_or_create(advertisement_id=ads_id, user=request.user)
+        favorites = Favorite.objects.get_or_create(user=request.user)
+        favorites[0].advertisements.add(ads[0].pk)
 
         return Response({"message": "Advertisement success added!"}, status=status.HTTP_200_OK)
 

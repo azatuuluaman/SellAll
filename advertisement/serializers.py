@@ -74,7 +74,7 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
         if not user.is_authenticated:
             return False
 
-        instance = Favorite.objects.filter(user=user, advertisement=obj)
+        instance = Favorite.objects.prefetch_related('advertisements').filter(user=user, advertisements=obj)
 
         if not instance:
             return False

@@ -108,9 +108,9 @@ class AdsCommentAdmin(admin.ModelAdmin):
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
-    list_display = ('id', 'advertisement', 'user')
-    list_display_links = ('id', 'advertisement')
-    list_filter = ('advertisement', 'user')
+    list_display = ('id', 'user')
+    list_display_links = ('id',)
+    list_filter = ('advertisements', 'user')
 
 
 @admin.register(ComplainingForAds)

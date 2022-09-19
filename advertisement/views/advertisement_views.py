@@ -115,7 +115,12 @@ class SimularAdsView(views.APIView):
 
         child_category = get_object_or_404(ChildCategory, pk=child_category_id)
 
-        advertisement = Advertisement.objects.filter(child_category=child_category)[:limit]
+        advertisement = (
+            Advertisement.objects
+            .select_related('child_category')
+            .filter(child_category=child_category)
+            [:limit]
+        )
 
         ads_count = advertisement.count()
 
