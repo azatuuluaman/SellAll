@@ -1,6 +1,9 @@
 from django.utils import timezone
+from django.http import HttpResponseForbidden
 
+from rest_framework import status
 from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
 
 from advertisement.models import Advertisement
 from advertisement.views.advertisement_views import AdvertisementRUDView
@@ -14,6 +17,37 @@ class IPMiddleware:
     def __call__(self, request):
         user_ip = get_client_ip(request)
         request.user.ip = user_ip
+        response = self.get_response(request)
+
+        return response
+
+
+class RequestLimitMiddleware:
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        redis = Redis()
+        client_ip = request.user.ip
+
+        key = f'request-{client_ip}'
+
+        conn = redis.conn
+        request_count = conn.get(key)
+
+        if not request_count:
+            conn.set(key, 10)
+            conn.expire(key, 10)
+        else:
+            query_count = int(request_count)
+
+            if query_count == 0:
+                return HttpResponseForbidden({'message': 'Request limit exceeded'},
+                                             status.HTTP_509_BANDWIDTH_LIMIT_EXCEEDED)
+
+        conn.decr(key)
+
         response = self.get_response(request)
 
         return response
