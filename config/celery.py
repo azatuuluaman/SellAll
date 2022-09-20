@@ -18,7 +18,7 @@ app.conf.beat_schedule = {
     },
     'parse_house_kg': {
         'task': 'advertisement.tasks.parse_house_kg',
-        'schedule': crontab(minute='*'),
+        'schedule': crontab(hour='*'),
         'args': (1, 5)
     }
 }

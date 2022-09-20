@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from django.utils.crypto import get_random_string
 
 from rest_framework import generics, status, views
 from rest_framework.response import Response
@@ -10,7 +12,7 @@ from rest_framework.decorators import action
 
 from advertisement.utils import Redis
 from .serializers import UserRegisterSerializer, UserSerializer
-from .tasks import send_ads_for_emails
+from .tasks import send_ads_for_emails, send_message_to_email
 
 User = get_user_model()
 
@@ -77,6 +79,39 @@ class UserAPIVIew(views.APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ForgotPasswordAPIView(views.APIView):
+
+    @swagger_auto_schema(method='post', request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'email': openapi.Schema(type=openapi.TYPE_STRING, description='Your email'),
+        }))
+    @action(methods=['POST'], detail=False)
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+
+        if not email:
+            return Response({'email': 'Email can\' be empty!'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = get_object_or_404(User, email=email)
+        new_password = get_random_string(16)
+
+        user.set_password(new_password)
+        user.save()
+
+        email_body = ['Пароль успешно сброшен!', f'Ваш новый пароль {new_password}']
+
+        message = {
+            'email_subject': 'Сброс пароля',
+            'email_body': '\n'.join(email_body),
+            'to_whom': user.email
+        }
+
+        send_message_to_email.delay(message)
+
+        return Response({'message': 'Success'}, status=status.HTTP_200_OK)
 
 
 class SendMassAPIView(views.APIView):
