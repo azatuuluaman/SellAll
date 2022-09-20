@@ -11,10 +11,30 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
 
 from advertisement.utils import Redis
-from .serializers import UserRegisterSerializer, UserSerializer
+from .serializers import UserRegisterSerializer, UserSerializer, UserUpdateSerializer
 from .tasks import send_ads_for_emails, send_message_to_email
 
 User = get_user_model()
+
+
+class UserAPIView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(method='patch', request_body=UserUpdateSerializer)
+    @action(methods=['patch'], detail=False)
+    def patch(self, request):
+        user = request.user
+        data = request.data
+        data._mutable = True
+
+        serializer = UserUpdateSerializer()
+        user = serializer.update(user, data)
+
+        return Response(user.tokens(), status=status.HTTP_202_ACCEPTED)
 
 
 class RegisterUserView(generics.GenericAPIView):
@@ -73,16 +93,7 @@ class UserActivationView(views.APIView):
         return Response({"message": "Активация прошла успешно!"}, status=status.HTTP_200_OK)
 
 
-class UserAPIVIew(views.APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 class ForgotPasswordAPIView(views.APIView):
-
     @swagger_auto_schema(method='post', request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
