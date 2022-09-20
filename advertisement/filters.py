@@ -42,7 +42,7 @@ class AdvertisementCustomFilterBackend(BaseFilterBackend):
 
                 queryset = queryset.filter(min_price | max_price).filter(**filters).distinct()
                 return queryset
-
+        print(filters)
         queryset = queryset.filter(**filters).distinct()
 
         return queryset

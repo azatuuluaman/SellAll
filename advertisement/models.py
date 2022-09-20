@@ -87,6 +87,7 @@ class Advertisement(models.Model):
     class Meta:
         verbose_name = 'Объявление'
         verbose_name_plural = 'Объявления'
+        ordering = ['id']
 
 
 class Subscription(models.Model):
@@ -99,6 +100,7 @@ class Subscription(models.Model):
     class Meta:
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
+        ordering = ['id']
 
 
 class AdsSubscriber(models.Model):
@@ -116,6 +118,7 @@ class AdsSubscriber(models.Model):
     class Meta:
         verbose_name = 'Подписка объявления'
         verbose_name_plural = 'Подписки объявлений'
+        ordering = ['id']
 
 
 class AdsImage(models.Model):
@@ -131,12 +134,13 @@ class AdsImage(models.Model):
     class Meta:
         verbose_name = 'Изображение объявления'
         verbose_name_plural = 'Изображения объявлений'
+        ordering = ['id']
 
 
 class Favorite(models.Model):
     advertisements = models.ManyToManyField(Advertisement, verbose_name='Объявление', related_name='favorites')
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                             verbose_name='Пользователь', related_name='favorites')
+                                verbose_name='Пользователь', related_name='favorites')
 
     def __str__(self):
         return f'{self.user.email}-{self.advertisements}'
@@ -144,6 +148,7 @@ class Favorite(models.Model):
     class Meta:
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранные'
+        ordering = ['id']
 
 
 class AdsComment(models.Model):
@@ -197,3 +202,4 @@ class ComplainingForAds(models.Model):
     class Meta:
         verbose_name = 'Жалоба'
         verbose_name_plural = 'Жалобы'
+        ordering = ['id']
