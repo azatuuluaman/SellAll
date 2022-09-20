@@ -8,7 +8,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .parser.tasks import parse_house_kg
+from advertisement.tasks import parse_house_kg
 
 from .management.commands import dump_categories
 
@@ -86,7 +86,7 @@ class AdsTestCase(APITestCase):
         create_response = self.create_ads_endpoint(ads_create_data)
         self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
 
-        parse_house_kg(1, 2)
+        parse_house_kg.delay(1, 2)
 
         advertisement_count = self.get_ads().filter(type=settings.ACTIVE).count()
         list_response = self.ads_list_endpoint()

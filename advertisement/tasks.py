@@ -16,16 +16,14 @@ headers = {
 }
 
 
-# @shared_task
-# def parse_house_kg():
-#     house_kg(1, 5)
-
-
-# @app.task
-def house_kg(start, end):
+@app.task
+def parse_house_kg(start, end):
+    count = 0
     all_advertisement_list = []
     child_category = ChildCategory.objects.all()
     for i in range(start, end + 1):
+        print(count)
+        count += 1
         url = f'https://www.house.kg/kupit?page={i}'
         req = requests.get(url, headers=headers)
         src = req.text
