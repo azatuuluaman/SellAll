@@ -4,7 +4,7 @@ from rest_framework import status, views
 from rest_framework.response import Response
 
 from advertisement.models import Advertisement
-from advertisement.utils import Redis, get_client_ip
+from advertisement.utils import Redis
 
 
 class AddPhoneView(views.APIView):
@@ -17,7 +17,7 @@ class AddPhoneView(views.APIView):
 
         redis = Redis()
         date = timezone.now().date().strftime('%d.%m.%Y')
-        client_ip = request.user.ip
+        client_ip = request.ip
         redis.add_phone_views(ads_id, date, client_ip)
 
         return Response({'message': 'Success'}, status=status.HTTP_200_OK)

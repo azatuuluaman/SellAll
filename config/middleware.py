@@ -16,7 +16,7 @@ class IPMiddleware:
 
     def __call__(self, request):
         user_ip = get_client_ip(request)
-        request.user.ip = user_ip
+        request.ip = user_ip
         response = self.get_response(request)
 
         return response
@@ -29,7 +29,7 @@ class RequestLimitMiddleware:
 
     def __call__(self, request):
         redis = Redis()
-        client_ip = request.user.ip
+        client_ip = request.ip
 
         key = f'request-{client_ip}'
 
@@ -69,7 +69,7 @@ class ViewMiddleware:
                 redis = Redis()
                 ads_id = instance.pk
                 date = timezone.now().date().strftime('%d.%m.%Y')
-                client_ip = request.user.ip
+                client_ip = request.ip
                 redis.add_views(ads_id, date, client_ip)
 
         except AttributeError:
