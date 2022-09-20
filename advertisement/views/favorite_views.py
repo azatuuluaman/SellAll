@@ -34,12 +34,12 @@ class FavoriteAPIView(views.APIView):
         if not ads_id:
             return Response({"ads_id": "Can't be empty!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        ads = Advertisement.objects.prefetch_related('favorites').filter(pk=ads_id)
+        ads = Advertisement.objects.filter(pk=ads_id)
 
         if not ads.exists():
             return Response({"ads_id": "Advertisement not found!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        Favorite.objects.get_or_create(user=request.user)
+        Favorite.objects.get_or_create(user=request.user, advertisement=ads[0])
 
         return Response({"message": "Advertisement success added!"}, status=status.HTTP_200_OK)
 

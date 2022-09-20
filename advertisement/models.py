@@ -138,13 +138,13 @@ class AdsImage(models.Model):
 
 
 class Favorite(models.Model):
-    advertisements = models.ForeignKey(Advertisement, verbose_name='Объявление', on_delete=models.CASCADE,
+    advertisement = models.ForeignKey(Advertisement, verbose_name='Объявление', on_delete=models.CASCADE,
                                        related_name='favorites')
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                 verbose_name='Пользователь', related_name='favorites')
 
     def __str__(self):
-        return f'{self.user.email}-{self.advertisements}'
+        return f'{self.user.email}-{self.advertisement}'
 
     class Meta:
         verbose_name = 'Избранное'
