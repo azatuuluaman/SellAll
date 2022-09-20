@@ -39,8 +39,7 @@ class FavoriteAPIView(views.APIView):
         if not ads.exists():
             return Response({"ads_id": "Advertisement not found!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        favorites = Favorite.objects.get_or_create(user=request.user)
-        favorites[0].advertisements.add(ads[0].pk)
+        Favorite.objects.get_or_create(user=request.user)
 
         return Response({"message": "Advertisement success added!"}, status=status.HTTP_200_OK)
 
@@ -65,6 +64,6 @@ class FavoriteAPIView(views.APIView):
         if not favorites.exists():
             return Response({"favorites": "Not found!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        favorites[0].advertisements.remove(ads_id)
+        favorites.delete()
 
         return Response({"message": "Success deleted!"}, status=status.HTTP_200_OK)

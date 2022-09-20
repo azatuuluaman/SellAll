@@ -138,7 +138,8 @@ class AdsImage(models.Model):
 
 
 class Favorite(models.Model):
-    advertisements = models.ManyToManyField(Advertisement, verbose_name='Объявление', related_name='favorites')
+    advertisements = models.ForeignKey(Advertisement, verbose_name='Объявление', on_delete=models.CASCADE,
+                                       related_name='favorites')
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                 verbose_name='Пользователь', related_name='favorites')
 
