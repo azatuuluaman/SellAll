@@ -102,10 +102,8 @@ class UserAdvertisementListView(generics.ListAPIView):
 class SimularAdsView(views.APIView):
     @swagger_auto_schema(method='get', manual_parameters=[limit_query, child_category_id_query])
     @action(methods=['GET'], detail=False)
-    def get(self, request, *args, **kwargs):
+    def get(self, request, child_category_id, *args, **kwargs):
         """Get child category id"""
-
-        child_category_id = self.kwargs['child_category_id']
         limit = self.request.query_params.get('limit')
 
         if limit:
@@ -122,27 +120,7 @@ class SimularAdsView(views.APIView):
             [:limit]
         )
 
-        ads_count = advertisement.count()
-
-        if ads_count < limit:
-            category = Category.objects.get(child_categories=child_category)
-            simular_child_categories = ChildCategory.objects.filter(category=category.pk)
-
-            not_enough = limit - ads_count
-
-            for i in range(not_enough):
-                not_enough = limit - ads_count
-                advertisement_by_category = Advertisement.objects.filter(
-                    child_category=simular_child_categories[i])[:not_enough]
-
-                if limit >= ads_count:
-                    advertisement = advertisement | advertisement_by_category
-                    advertisement = advertisement.distinct()
-                    break
-
-                ads_count += len(advertisement_by_category)
-
-        serializer = AdvertisementRetrieveSerializer(advertisement, many=True, context={'request': request})
+        serializer = AdvertisementRetrieveSerializer(advertisement, many=True)
         return Response({'count': advertisement.count(), 'results': serializer.data}, status=status.HTTP_200_OK)
 
 

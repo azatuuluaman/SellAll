@@ -2,6 +2,7 @@ import random
 import requests
 
 from bs4 import BeautifulSoup
+from celery import shared_task
 from django.utils.text import slugify
 
 from advertisement.models import Advertisement, ChildCategory
@@ -15,8 +16,13 @@ headers = {
 }
 
 
-@app.task
-def parse_house_kg(start, end):
+# @shared_task
+# def parse_house_kg():
+#     house_kg(1, 5)
+
+
+# @app.task
+def house_kg(start, end):
     all_advertisement_list = []
     child_category = ChildCategory.objects.all()
     for i in range(start, end + 1):
