@@ -33,4 +33,13 @@ class StatisticsView(views.APIView):
 
         redis = Redis()
         data = redis.get_ads_data(ads_id)
+
+        del data['clients_ip']
+        del data['phone_client_ip']
+
+        for key in data:
+            if type(data[key]) == dict:
+                del data[key]['clients_ip']
+                del data[key]['phone_client_ip']
+
         return Response(data, status=status.HTTP_200_OK)
