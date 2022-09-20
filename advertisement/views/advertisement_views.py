@@ -120,7 +120,7 @@ class SimularAdsView(views.APIView):
             [:limit]
         )
 
-        serializer = AdvertisementRetrieveSerializer(advertisement, many=True)
+        serializer = AdvertisementRetrieveSerializer(advertisement, many=True, context={'request': request})
         return Response({'count': advertisement.count(), 'results': serializer.data}, status=status.HTTP_200_OK)
 
 
