@@ -41,7 +41,7 @@ services:
       - web
 
   mongo_db:
-    container_name: mongo_db
+    container_name: mongo_db_bazar
     image: mongo
     volumes:
       - ./data-mongodb:/data/db
