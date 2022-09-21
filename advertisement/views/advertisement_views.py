@@ -49,10 +49,10 @@ class AdvertisementListView(generics.ListAPIView):
         return super(AdvertisementListView, self).get(request)
 
     def get_queryset(self):
+        queryset = Advertisement.objects.filter(type=settings.ACTIVE)
+
         if self.request.user.is_superuser:
             queryset = Advertisement.objects.all()
-        else:
-            queryset = Advertisement.objects.filter(type=settings.ACTIVE)
 
         return queryset
 
@@ -64,7 +64,7 @@ class AdvertisementCreateView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         images = request.FILES.getlist('images')
         data = request.data
-
+        print(request.data)
         context_data = {
             'images': images,
             'owner': request.user

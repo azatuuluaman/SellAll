@@ -57,9 +57,9 @@ class ChatAPIVIew(views.APIView):
     serializer_class = ChatListSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        ChatSerializer(queryset)
+    # def get(self, request, *args, **kwargs):
+    #     queryset = self.get_queryset()
+    #     ChatSerializer(queryset)
 
     def get_queryset(self):
         owner = Q(advertisement__owner=self.request.user)

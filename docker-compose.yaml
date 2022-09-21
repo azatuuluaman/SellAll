@@ -28,6 +28,7 @@ services:
     depends_on:
       - db
       - redis
+      - mongo_db
 
   celery:
     restart: always
@@ -38,3 +39,11 @@ services:
     depends_on:
       - redis
       - web
+
+  mongo:
+    container_name: mongo_db
+    image: mongo
+    volumes:
+      - ./data-mongodb:/data/db
+    ports:
+      - "27018:27017"
