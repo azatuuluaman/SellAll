@@ -8,9 +8,17 @@ class Command(BaseCommand):
     help = 'Start Parsing'
 
     def handle(self, *args, **options):
+        site = options.get('site')
         start = options.get('start_page')
         end = options.get('end_page')
-        parse_house_kg.delay(start, end)
+
+        parsers = {
+            'house.kg': parse_house_kg.delay,
+
+        }
+        # if site == 'house_kg':
+        #     parse_house_kg.delay(start, end)
+
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -22,6 +30,12 @@ class Command(BaseCommand):
         parser.add_argument(
             '-ep',
             '--end_page',
+            type=int,
+            default=10
+        )
+        parser.add_argument(
+            '-s',
+            '--sites',
             type=int,
             default=10
         )

@@ -5,7 +5,6 @@ from django.utils.crypto import get_random_string
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -146,3 +145,20 @@ class UsersAPIView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdminUser]
+
+
+class DeleteUserAPIView(views.APIView):
+    queryset = User.objects.all()
+    permission_classes = [IsAdminUser]
+
+    @swagger_auto_schema(method='delete', request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'pk': openapi.Schema(type=openapi.TYPE_INTEGER, description='User id'),
+        }))
+    @action(methods=['DELETE'], detail=False)
+    def delete(self, request, *args, **kwargs):
+        pk = request.data.get('pk')
+        user = get_object_or_404(User, pk=pk)
+        user.delete()
+        return Response({'message': 'User success deleted!'}, status=status.HTTP_200_OK)

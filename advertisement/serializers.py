@@ -226,10 +226,7 @@ class CitySerializer(serializers.ModelSerializer):
 
 
 class ComplainingForAdsSerializer(serializers.ModelSerializer):
-    advertisement = serializers.CharField(source='advertisement.name')
-    class Meta:
-        model = ComplainingForAds
-        fields = ('id', 'advertisement', 'type', 'text')
+    advertisement_name = serializers.CharField(source='advertisement.name', read_only=True, default='')
 
     def validate(self, attrs):
         type = attrs.get('type')
@@ -239,3 +236,7 @@ class ComplainingForAdsSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Другое должен иметь текст!')
 
         return attrs
+
+    class Meta:
+        model = ComplainingForAds
+        fields = ('id', 'advertisement', 'advertisement_name', 'type', 'text', 'send_date')
