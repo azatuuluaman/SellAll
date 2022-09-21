@@ -67,6 +67,9 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     category = serializers.CharField(source='child_category.category.name', read_only=True)
     owner = UserSerializer(read_only=True)
 
+    def validate(self, attrs):
+        print(self.context.get('request'))
+
     def get_is_favorite(self, obj):
         user = self.context.get('request').user
 
@@ -177,7 +180,6 @@ class AdvertisementSerializer(serializers.ModelSerializer):
             'email',
             'phone_numbers',
             'whatsapp_number',
-            'type',
             'city',
             'child_category',
             'owner',
@@ -193,7 +195,7 @@ class ChildCategorySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'category', 'ads_count')
 
     def get_ads_count(self, obj):
-        return Advertisement.objects.filter(child_category=obj).count()
+        return Advertisement.objects.filter(child_category=obj, type=settings.ACTIVE).count()
 
 
 class CategorySerializer(serializers.ModelSerializer):
