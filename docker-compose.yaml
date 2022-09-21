@@ -40,7 +40,7 @@ services:
       - redis
       - web
 
-  mongo:
+  mongo_db:
     container_name: mongo_db
     image: mongo
     volumes:
