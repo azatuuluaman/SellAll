@@ -67,9 +67,6 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     category = serializers.CharField(source='child_category.category.name', read_only=True)
     owner = UserSerializer(read_only=True)
 
-    def validate(self, attrs):
-        print(self.context.get('request'))
-
     def get_is_favorite(self, obj):
         user = self.context.get('request').user
 
@@ -229,6 +226,7 @@ class CitySerializer(serializers.ModelSerializer):
 
 
 class ComplainingForAdsSerializer(serializers.ModelSerializer):
+    advertisement = serializers.CharField(source='advertisement.name')
     class Meta:
         model = ComplainingForAds
         fields = ('id', 'advertisement', 'type', 'text')

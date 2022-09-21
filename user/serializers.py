@@ -4,6 +4,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import password_validation
 
 from rest_framework import serializers
+from rest_framework_simplejwt.state import token_backend
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from advertisement.utils import Redis
 
@@ -89,19 +92,35 @@ class UserUpdateSerializer(serializers.Serializer):
 
         return data
 
-    def update(self, instance, data):
+    def update(self, user, data):
         validated_data = self.validate(data)
 
-        instance = User.objects.filter(pk=instance.pk)
-        user = instance[0]
         password = validated_data.get('password')
 
+        first_name = validated_data.get('first_name')
+        last_name = validated_data.get('last_name')
+        email = validated_data.get('email')
+        phone_number = validated_data.get('phone_number')
+
+        if first_name:
+            user.first_name = first_name
+
+        if last_name:
+            user.last_name = last_name
+
+        if email:
+            user.email = email
+
+        if phone_number:
+            user.phone_number = phone_number
+
         if password:
+            old_token = user.tokens().get('refresah')
+            token = RefreshToken(old_token)
+            token.blacklist()
+
             user.set_password(password)
             del validated_data['password']
 
-        instance.update(**validated_data)
-
         user.save()
-
         return user

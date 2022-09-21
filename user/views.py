@@ -5,6 +5,7 @@ from django.utils.crypto import get_random_string
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -32,6 +33,12 @@ class UserAPIView(views.APIView):
 
         if type(data) != dict:
             data._mutable = True
+
+        if user.is_superuser:
+            id = request.data.get('id')
+
+            if id:
+                user = User.objects.get(pk=id)
 
         serializer = UserUpdateSerializer()
         user = serializer.update(user, data)
@@ -134,3 +141,8 @@ class SendMassAPIView(views.APIView):
         send_ads_for_emails.delay()
         return Response('Sending message for all users!', status=status.HTTP_200_OK)
 
+
+class UsersAPIView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUser]
