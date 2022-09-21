@@ -1,6 +1,7 @@
+import json
+
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.utils import timezone
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -64,7 +65,7 @@ class AdvertisementCreateView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         images = request.FILES.getlist('images')
         data = request.data
-        print(request.data)
+
         context_data = {
             'images': images,
             'owner': request.user

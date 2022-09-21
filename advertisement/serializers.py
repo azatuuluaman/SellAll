@@ -138,6 +138,7 @@ class AdsImageCreateSerializer(serializers.ModelSerializer):
 
 
 class AdvertisementSerializer(serializers.ModelSerializer):
+    phone_numbers = serializers.ListField(required=False, allow_null=True)
 
     def validate(self, data):
         """
