@@ -29,7 +29,9 @@ class UserAPIView(views.APIView):
     def patch(self, request):
         user = request.user
         data = request.data
-        data._mutable = True
+
+        if type(data) != dict:
+            data._mutable = True
 
         serializer = UserUpdateSerializer()
         user = serializer.update(user, data)
