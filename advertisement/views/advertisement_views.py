@@ -91,7 +91,7 @@ class AdvertisementRUDView(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         images = request.FILES.getlist('images')
-        print(images)
+        # print(images)
 
         super(AdvertisementRUDView, self).update(request, *args, **kwargs)
 

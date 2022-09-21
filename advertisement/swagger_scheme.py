@@ -6,6 +6,7 @@ limit_query = openapi.Parameter('limit', openapi.IN_QUERY, description='Simular 
 
 child_category_id_query = openapi.Parameter('child_category_id', openapi.IN_PATH, description='child category id',
                                             type=openapi.TYPE_INTEGER)
+chat_id = openapi.Parameter('chat_id', openapi.IN_QUERY, description='chat id', type=openapi.TYPE_STRING)
 
 
 class AdvertisementQuerySerializer(serializers.Serializer):

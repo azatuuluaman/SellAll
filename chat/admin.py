@@ -13,7 +13,7 @@ class ChatAdmin(admin.ModelAdmin):
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'sender', 'chat', 'get_message', 'send_date')
+    list_display = ('id', 'sender', 'chat', 'get_message')
     list_display_links = ('id', 'sender')
     list_filter = ('sender', 'chat', 'send_date')
     search_fields = ('message',)

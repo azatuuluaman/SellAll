@@ -133,3 +133,4 @@ class SendMassAPIView(views.APIView):
     def get(self, request):
         send_ads_for_emails.delay()
         return Response('Sending message for all users!', status=status.HTTP_200_OK)
+

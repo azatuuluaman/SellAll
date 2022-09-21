@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from drf_yasg import openapi
@@ -6,10 +8,11 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from rest_framework import views
+from rest_framework import views, generics
 from rest_framework.permissions import IsAuthenticated
 
 from advertisement.models import Advertisement
+from advertisement.swagger_scheme import chat_id
 from .models import Chat, Message
 from .pusher import pusher_client
 from .serializers import MessageSerializer, ChatListSerializer, ChatSerializer
@@ -53,13 +56,9 @@ class MessageAPIView(views.APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-class ChatAPIVIew(views.APIView):
+class ChatListAPIVIew(generics.ListAPIView):
     serializer_class = ChatListSerializer
     permission_classes = [IsAuthenticated]
-
-    # def get(self, request, *args, **kwargs):
-    #     queryset = self.get_queryset()
-    #     ChatSerializer(queryset)
 
     def get_queryset(self):
         owner = Q(advertisement__owner=self.request.user)
@@ -67,7 +66,26 @@ class ChatAPIVIew(views.APIView):
         return Chat.objects.filter(owner | sender).distinct()
 
 
-class MessageReadAPIView(views.APIView):
+class ChatAPIView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(method='get', manual_parameters=[chat_id])
+    @action(methods=['GET'], detail=False)
+    def get(self, request, *args, **kwargs):
+        chat_id = request.query_params.get('chat_id')
+        messages = Message.objects.filter(chat__chat_id=chat_id)
+        response_data = {message.send_date.strftime('%d.%m.%Y'): [] for message in messages}
+
+        for message in messages:
+            response_data[message.send_date.strftime('%d.%m.%Y')].append(MessageSerializer(message).data)
+
+        return Response(
+            {
+                'chat_id': chat_id,
+                'advertisement': chat_id.split('-')[0],
+                'messages_parts': response_data
+            }, status=status.HTTP_200_OK)
+
     @swagger_auto_schema(method='post', request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         required=['version'],
@@ -94,5 +112,4 @@ class MyChatsAPIView(views.APIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        # count = Chat.objects.filter(advertisement__owner=user).count()
         return Response({'channel': f'my-chats-count-{user.pk}'}, status=status.HTTP_200_OK)
