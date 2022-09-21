@@ -181,7 +181,8 @@ class AdsComment(models.Model):
 
 
 class ComplainingForAds(models.Model):
-    advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, null=True, blank=True)
+    advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, related_name='complain',
+                                      null=True, blank=True)
     type = models.CharField("Тип жалобы", max_length=100, choices=settings.COMPLAINING_TYPE,
                             default=settings.WRONG_RUBRIC)
     text = models.TextField('Текст', null=True, blank=True)

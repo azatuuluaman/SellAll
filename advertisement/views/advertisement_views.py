@@ -34,6 +34,7 @@ from advertisement.models import (
     ComplainingForAds
 )
 
+
 class AdvertisementListView(generics.ListAPIView):
     serializer_class = AdvertisementRetrieveSerializer
     permission_classes = [AllowAny]
@@ -54,11 +55,9 @@ class AdvertisementListView(generics.ListAPIView):
 
 class AdvertisementCreateView(generics.CreateAPIView):
     serializer_class = AdvertisementSerializer
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return Response({'message': 'unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
-
         images = request.FILES.getlist('images')
         data = request.data
 
@@ -84,6 +83,14 @@ class AdvertisementRUDView(generics.RetrieveUpdateDestroyAPIView):
             self.permission_classes = [AllowAny]
 
         return [permission() for permission in self.permission_classes]
+
+    def update(self, request, *args, **kwargs):
+        images = request.FILES.getlist('images')
+        print(images)
+
+        super(AdvertisementRUDView, self).update(request, *args, **kwargs)
+
+        return Response({'message': 'success'}, status=status.HTTP_202_ACCEPTED)
 
 
 class UserAdvertisementListView(generics.ListAPIView):

@@ -35,5 +35,5 @@ urlpatterns = [
     path('phone_view/<int:pk>/', AddPhoneView.as_view(), name='phone_view'),
     path('simular/<int:child_category_id>/', SimularAdsView.as_view(), name='simular'),
     path('complaining/', ComplainingForAdsView.as_view(), name='complaining'),
-    path('favorites/', FavoriteAPIView.as_view(), name='favorites'),
+    path('favorites/', FavoriteAPIView.as_view(), name='favorites')
 ]

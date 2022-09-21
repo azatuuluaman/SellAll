@@ -1,5 +1,5 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 
 from .serializers import (
     SiteSerializer,
@@ -47,3 +47,9 @@ class HelpCategoryAPIView(generics.ListAPIView):
     queryset = HelpCategory.objects.all()
     permission_classes = [AllowAny]
 
+
+
+class FeedBackAdminView(generics.ListAPIView):
+    serializer_class = FeedBackSerializer
+    queryset = FeedBack.objects.all()
+    permission_classes = [IsAdminUser]

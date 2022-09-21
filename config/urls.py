@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
 
 from .swagger_config import urlpatterns as swg
+from .admin_urls import urlpatterns as admin_url
 
 API_HEAD_URL = f'api/v1'
 
@@ -37,7 +38,7 @@ urlpatterns = [
     path(f'{API_HEAD_URL}/site/', include('siteapp.urls')),
     path(f'{API_HEAD_URL}/advertisement/', include('advertisement.urls')),
     path(f'{API_HEAD_URL}/chat/', include('chat.urls')),
-
+    path(f'{API_HEAD_URL}/admin/', include(admin_url))
 ]
 
 
