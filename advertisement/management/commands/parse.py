@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from argparse import RawTextHelpFormatter
 
-from advertisement.tasks import parse_house_kg
+from advertisement.tasks import parse_house_kg, parse_doska, parse_salexy
 
 
 class Command(BaseCommand):
@@ -13,14 +13,20 @@ class Command(BaseCommand):
         end = options.get('end_page')
 
         parsers = {
-            'house.kg': parse_house_kg.delay,
-
+            'house_kg': parse_house_kg.delay,
+            'doska': parse_doska.delay,
+            'salexy': parse_salexy.delay
         }
-        # if site == 'house_kg':
-        #     parse_house_kg.delay(start, end)
 
+        if site in parsers:
+            parsers[site](start, end)
 
     def add_arguments(self, parser):
+        parser.add_argument(
+            '-s',
+            '--sites',
+            type=str,
+        )
         parser.add_argument(
             '-sp',
             '--start_page',
@@ -30,12 +36,6 @@ class Command(BaseCommand):
         parser.add_argument(
             '-ep',
             '--end_page',
-            type=int,
-            default=10
-        )
-        parser.add_argument(
-            '-s',
-            '--sites',
             type=int,
             default=10
         )

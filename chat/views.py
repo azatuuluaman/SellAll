@@ -15,7 +15,7 @@ from advertisement.models import Advertisement
 from advertisement.swagger_scheme import chat_id
 from .models import Chat, Message
 from .pusher import pusher_client
-from .serializers import MessageSerializer, ChatListSerializer, ChatSerializer
+from .serializers import MessageSerializer, ChatListSerializer
 
 User = get_user_model()
 
@@ -29,17 +29,25 @@ class MessageAPIView(views.APIView):
                              required=['version'],
                              properties={
                                  'ads_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                 'chat_id': openapi.Schema(type=openapi.TYPE_INTEGER),
                                  'message': openapi.Schema(type=openapi.TYPE_STRING),
                              },
                              operation_description='Send message'))
     @action(['post'], detail=False)
     def post(self, request):
         ads_id = request.data.get('ads_id')
+        user = request.user
+        user_id = user.pk
+
+        chat_id_query = request.data.get('chat_id')
+
+        if chat_id_query:
+            ads_id, user_id = chat_id_query.split('-')
+
         ads = get_object_or_404(Advertisement, pk=ads_id)
 
-        user = request.user
+        chat_id = f'{ads.pk}-{user_id}'
 
-        chat_id = f'{ads.pk}-{ads.owner_id}-{user.pk}'
         message = request.data.get('message')
 
         chat = Chat.objects.get_or_create(chat_id=chat_id, advertisement_id=ads_id)[0]

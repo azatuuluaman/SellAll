@@ -83,10 +83,10 @@ def get_descrition(POSTSOUD):
 
 
 @app.task
-def parse_doska():
+def parse_doska(start, end):
     all_advertisement_list = []
     print("Start Parsing")
-    for i in range(1, 2):
+    for i in range(start, end):
         url = f'https://resume.doska.kg/vacancy/&page={i}&sortby=new'
         req = requests.get(url, headers=headers)
         src = req.text
