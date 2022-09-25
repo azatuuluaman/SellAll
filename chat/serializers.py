@@ -5,12 +5,14 @@ from .models import Message, Chat
 
 class MessageSerializer(serializers.ModelSerializer):
     chat = serializers.CharField(source='chat.chat_id', read_only=True)
-    sender = serializers.CharField(source='sender.__str__', read_only=True)
+    sender = serializers.CharField(source='sender.pk', read_only=True)
+    sender_name = serializers.CharField(source='sender.__str__', read_only=True)
 
     class Meta:
         model = Message
         fields = (
             'sender',
+            'sender_name',
             'chat',
             'message',
             'send_date',
