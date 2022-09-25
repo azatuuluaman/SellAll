@@ -140,7 +140,7 @@ class AdsImage(models.Model):
 class Favorite(models.Model):
     advertisement = models.ForeignKey(Advertisement, verbose_name='Объявление', on_delete=models.CASCADE,
                                        related_name='favorites')
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                 verbose_name='Пользователь', related_name='favorites')
 
     def __str__(self):
