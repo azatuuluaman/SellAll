@@ -29,7 +29,7 @@ class MessageAPIView(views.APIView):
                              required=['version'],
                              properties={
                                  'ads_id': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                 'chat_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                 'chat_id': openapi.Schema(type=openapi.TYPE_STRING),
                                  'message': openapi.Schema(type=openapi.TYPE_STRING),
                              },
                              operation_description='Send message'))
