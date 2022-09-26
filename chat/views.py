@@ -84,8 +84,15 @@ class ChatAPIView(views.APIView):
         messages = Message.objects.filter(chat__chat_id=chat_id)
         response_data = {message.send_date.strftime('%d.%m.%Y'): [] for message in messages}
 
+        if not chat_id:
+            return Response({'chat_id': "Field chat_id can't be empty"}, status=status.HTTP_400_BAD_REQUEST)
+
         for message in messages:
             response_data[message.send_date.strftime('%d.%m.%Y')].append(MessageSerializer(message).data)
+
+        messages_is_read = Message.objects.exclude(sender=request.user.pk)
+
+        messages_is_read.filter(chat__chat_id=chat_id, is_read=False).update(is_read=True)
 
         return Response(
             {
@@ -93,26 +100,6 @@ class ChatAPIView(views.APIView):
                 'advertisement': chat_id.split('-')[0],
                 'messages_parts': response_data
             }, status=status.HTTP_200_OK)
-
-    @swagger_auto_schema(method='post', request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        required=['version'],
-        properties={
-            'chat_id': openapi.Schema(type=openapi.TYPE_STRING),
-        },
-        operation_description='Read message in chat'))
-    @action(methods=['POST'], detail=False)
-    def post(self, request, *args, **kwargs):
-        chat_id = request.data.get('chat_id')
-
-        if not chat_id:
-            return Response({'chat_id': "Field chat_id can't be empty"}, status=status.HTTP_400_BAD_REQUEST)
-
-        messages = Message.objects.exclude(sender=request.user.pk)
-
-        messages.filter(chat__chat_id=chat_id, is_read=False).update(is_read=True)
-
-        return Response({'message': 'Success'}, status=status.HTTP_200_OK)
 
 
 class MyChatsAPIView(views.APIView):
