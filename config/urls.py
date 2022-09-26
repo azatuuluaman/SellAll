@@ -37,7 +37,8 @@ urlpatterns = [
     path(f'{API_HEAD_URL}/site/', include('siteapp.urls')),
     path(f'{API_HEAD_URL}/advertisement/', include('advertisement.urls')),
     path(f'{API_HEAD_URL}/chat/', include('chat.urls')),
-    path(f'{API_HEAD_URL}/admin/', include(admin_url))
+    path(f'{API_HEAD_URL}/admin/', include(admin_url)),
+    path(f'{API_HEAD_URL}/order/', include('payment.urls'))
 ]
 
 

@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     'advertisement.apps.AdvertisementConfig',
     'siteapp.apps.SiteAppConfig',
     'chat.apps.ChatConfig',
-    'social_auth.apps.SocialAuthConfig'
+    'social_auth.apps.SocialAuthConfig',
+    'payment.apps.PaymentConfig'
 ]
 
 MIDDLEWARE = [
@@ -574,3 +575,16 @@ CKEDITOR_CONFIGS = {
 
     }
 }
+
+# PayBox config
+PAYBOX_URL = "https://api.paybox.money/payment.php"
+PAYBOX_PROJECT_ID = config("PAYBOX_PROJECT_ID")
+PAYBOX_SECRET_KEY = config("PAYBOX_SECRET_KEY")
+
+PAYBOX_SALT = config("PAYBOX_SALT")
+PAYBOX_SUCCESS_URL_METHOD = "GET"
+PAYBOX_CURRENCY = "KGS"
+PAYBOX_LANGUAGE = "ru"
+PAYBOX_SUCCESS_URL = config("PAYBOX_SUCCESS_URL")
+PAYBOX_RESULT_URL = config("PAYBOX_RESULT_URL")
+PG_SITE_URL = config("PG_SITE_URL")
