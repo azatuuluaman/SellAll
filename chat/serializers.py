@@ -48,7 +48,9 @@ class ChatListSerializer(serializers.ModelSerializer):
         )
 
 
-class ChatSerailizer(serializers.ModelSerializer):
+class ChatSerializer(serializers.ModelSerializer):
+    advertisement_name = serializers.CharField(source='advertisement.name')
+    advertisement_price = serializers.IntegerField(source='advertisement.price')
     sender_name = serializers.CharField(source='sender.__str__')
     owner = serializers.IntegerField(source='advertisement.owner.pk')
     owner_name = serializers.CharField(source='advertisement.owner.__str__')
@@ -58,6 +60,8 @@ class ChatSerailizer(serializers.ModelSerializer):
         fields = (
             'chat_id',
             'advertisement',
+            'advertisement_name',
+            'advertisement_price',
             'sender',
             'sender_name',
             'owner',

@@ -15,7 +15,7 @@ from advertisement.models import Advertisement
 from advertisement.swagger_scheme import chat_id
 from .models import Chat, Message
 from .pusher import pusher_client
-from .serializers import MessageSerializer, ChatListSerializer, ChatSerailizer
+from .serializers import MessageSerializer, ChatListSerializer, ChatSerializer
 
 User = get_user_model()
 
@@ -99,7 +99,7 @@ class ChatAPIView(views.APIView):
         messages_is_read = Message.objects.exclude(sender=request.user.pk)
 
         messages_is_read.filter(chat=chat, is_read=False).update(is_read=True)
-        data = ChatSerailizer(chat).data
+        data = ChatSerializer(chat).data
 
         return Response(
             {
