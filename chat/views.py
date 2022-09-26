@@ -15,7 +15,7 @@ from advertisement.models import Advertisement
 from advertisement.swagger_scheme import chat_id
 from .models import Chat, Message
 from .pusher import pusher_client
-from .serializers import MessageSerializer, ChatListSerializer
+from .serializers import MessageSerializer, ChatListSerializer, ChatSerailizer
 
 User = get_user_model()
 
@@ -42,6 +42,9 @@ class MessageAPIView(views.APIView):
         chat_id_query = request.data.get('chat_id')
 
         if chat_id_query:
+            if '-' not in chat_id_query:
+                return Response({'chat_id': "Not valid!"}, status=status.HTTP_400_BAD_REQUEST)
+
             ads_id, user_id = chat_id_query.split('-')
 
         ads = get_object_or_404(Advertisement, pk=ads_id)
@@ -50,7 +53,7 @@ class MessageAPIView(views.APIView):
 
         message = request.data.get('message')
 
-        chat = Chat.objects.get_or_create(chat_id=chat_id, advertisement_id=ads_id)[0]
+        chat = Chat.objects.get_or_create(chat_id=chat_id, advertisement_id=ads_id, sender_id=user_id)[0]
         instance = Message.objects.create(sender=user, chat=chat, message=message)
 
         serializer = MessageSerializer(instance)
@@ -81,23 +84,26 @@ class ChatAPIView(views.APIView):
     @action(methods=['GET'], detail=False)
     def get(self, request, *args, **kwargs):
         chat_id = request.query_params.get('chat_id')
-        messages = Message.objects.filter(chat__chat_id=chat_id)
-        response_data = {message.send_date.strftime('%d.%m.%Y'): [] for message in messages}
 
         if not chat_id:
             return Response({'chat_id': "Field chat_id can't be empty"}, status=status.HTTP_400_BAD_REQUEST)
+
+        chat = get_object_or_404(Chat, chat_id=chat_id)
+        messages = Message.objects.filter(chat=chat)
+
+        response_data = {message.send_date.strftime('%d.%m.%Y'): [] for message in messages}
 
         for message in messages:
             response_data[message.send_date.strftime('%d.%m.%Y')].append(MessageSerializer(message).data)
 
         messages_is_read = Message.objects.exclude(sender=request.user.pk)
 
-        messages_is_read.filter(chat__chat_id=chat_id, is_read=False).update(is_read=True)
+        messages_is_read.filter(chat=chat, is_read=False).update(is_read=True)
+        data = ChatSerailizer(chat).data
 
         return Response(
             {
-                'chat_id': chat_id,
-                'advertisement': chat_id.split('-')[0],
+                'chat': data,
                 'messages_parts': response_data
             }, status=status.HTTP_200_OK)
 

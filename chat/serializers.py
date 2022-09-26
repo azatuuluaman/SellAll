@@ -20,25 +20,6 @@ class MessageSerializer(serializers.ModelSerializer):
         )
 
 
-class ChatSerializer(serializers.ModelSerializer):
-    messages = serializers.SerializerMethodField
-
-    def get_messages(self, obj):
-        messages = obj.prefetch_related('messages')
-        print(messages)
-        return 1
-
-    class Meta:
-        model = Chat
-        field = (
-            'chat_id',
-            'advertisement',
-            'advertisement_name',
-            'messages',
-            'unread_count',
-        )
-
-
 class ChatListSerializer(serializers.ModelSerializer):
     message = serializers.SerializerMethodField(read_only=True)
     unread_count = serializers.SerializerMethodField(read_only=True)
@@ -64,4 +45,21 @@ class ChatListSerializer(serializers.ModelSerializer):
             'advertisement_name',
             'message',
             'unread_count',
+        )
+
+
+class ChatSerailizer(serializers.ModelSerializer):
+    sender_name = serializers.CharField(source='sender.__str__')
+    owner = serializers.IntegerField(source='advertisement.owner.pk')
+    owner_name = serializers.CharField(source='advertisement.owner.__str__')
+
+    class Meta:
+        model = Chat
+        fields = (
+            'chat_id',
+            'advertisement',
+            'sender',
+            'sender_name',
+            'owner',
+            'owner_name',
         )
