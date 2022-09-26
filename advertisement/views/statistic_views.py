@@ -19,6 +19,7 @@ class AddPhoneView(views.APIView):
         date = timezone.now().date().strftime('%d.%m.%Y')
         client_ip = request.ip
         redis.add_phone_views(ads_id, date, client_ip)
+        redis.close()
 
         return Response({'message': 'Success'}, status=status.HTTP_200_OK)
 
@@ -33,6 +34,7 @@ class StatisticsView(views.APIView):
 
         redis = Redis()
         data = redis.get_ads_data(ads_id)
+        redis.close()
 
         del data['clients_ip']
         del data['phone_client_ip']

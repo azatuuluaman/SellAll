@@ -45,6 +45,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         key = f'activate_code_{activation_code}'
         redis.conn.set(key, user.pk)
         redis.conn.expire(key, 3600)
+        redis.close()
 
         send_activation_mail.delay(user.email, activation_code)
         return user

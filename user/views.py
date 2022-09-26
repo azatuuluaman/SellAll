@@ -97,6 +97,7 @@ class UserActivationView(views.APIView):
         user.save()
 
         redis.conn.delete(key)
+        redis.close()
 
         return Response({"message": "Активация прошла успешно!"}, status=status.HTTP_200_OK)
 

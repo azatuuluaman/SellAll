@@ -55,6 +55,7 @@ class Redis:
         if client_ip in decoded_data['clients_ip']:
             return True
         return False
+
     def check_phone_ip(self, decoded_data, client_ip) -> bool:
         """
         Check client ip in phone view redis
@@ -163,3 +164,6 @@ class Redis:
         decode_data = data.decode('utf-8')
         data = json.loads(decode_data)
         return data
+
+    def close(self):
+        self.conn.close()

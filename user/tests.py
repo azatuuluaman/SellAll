@@ -86,4 +86,5 @@ class UserTestCase(APITestCase):
         self.assertEqual(user.is_active, True)
         self.assertEqual(activate_code, None)
 
+        redis.close()
 

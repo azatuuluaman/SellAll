@@ -48,6 +48,7 @@ class RequestLimitMiddleware:
         conn.decr(key)
 
         response = self.get_response(request)
+        redis.close()
 
         return response
 
@@ -70,6 +71,7 @@ class ViewMiddleware:
                 date = timezone.now().date().strftime('%d.%m.%Y')
                 client_ip = request.ip
                 redis.add_views(ads_id, date, client_ip)
+                redis.close()
 
         except AttributeError:
             pass

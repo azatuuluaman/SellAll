@@ -92,11 +92,15 @@ class AdvertisementRetrieveSerializer(serializers.ModelSerializer):
     def get_views_count(self, obj):
         redis = Redis()
         data = redis.get_ads_data(obj.pk)
+        redis.close()
+
         return data['views_count']
 
     def get_phone_view_count(self, obj):
         redis = Redis()
         data = redis.get_ads_data(obj.pk)
+        redis.close()
+
         return data['phone_views_count']
 
     class Meta:
