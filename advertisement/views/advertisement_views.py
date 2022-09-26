@@ -90,7 +90,7 @@ class AdvertisementRUDView(generics.RetrieveUpdateDestroyAPIView):
         return [permission() for permission in self.permission_classes]
 
     def update(self, request, *args, **kwargs):
-        images = request.FILES.getlist('images')
+        # images = request.FILES.getlist('images')
         # print(images)
 
         super(AdvertisementRUDView, self).update(request, *args, **kwargs)

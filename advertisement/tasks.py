@@ -125,10 +125,10 @@ def parse_doska(start, end):
 
 
 @app.task
-def parse_salexy():
+def parse_salexy(start, end):
     all_advertisement_list = []
     print("Start Parsing")
-    for i in range(1, 2):
+    for i in range(start, end + 1):
         url = f'https://salexy.kg/bishkek/rabota/ishu_rabotu?page={i}'
         req = requests.get(url, headers=headers)
         src = req.text

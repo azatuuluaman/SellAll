@@ -15,6 +15,10 @@ from .models import (
 )
 
 
+class AdsImageInline(admin.StackedInline):
+    model = AdsImage
+
+
 @admin.register(Advertisement)
 class AdvertisementAdmin(admin.ModelAdmin):
     list_display = (
@@ -38,6 +42,7 @@ class AdvertisementAdmin(admin.ModelAdmin):
     )
     search_fields = ('name', 'description', 'email')
     readonly_fields = ('disable_date', 'slug')
+    inlines = [AdsImageInline]
 
     def get_prices(self, obj):
         return f'{obj.price}-{obj.max_price}' if obj.max_price else obj.price

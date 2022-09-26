@@ -61,7 +61,7 @@ class MessageAPIView(views.APIView):
 
         pusher_client.trigger(chat.chat_id, 'message', data)
 
-        if Message.objects.filter(chat=chat).count() == 1:
+        if Message.objects.filter(chat=chat, sender=request.user).count() == 1:
             pusher_client.trigger(f'my-chats-count-{user.pk}', 'message', f'{chat.chat_id}')
 
         return Response(data, status=status.HTTP_200_OK)

@@ -13,9 +13,9 @@ class Command(BaseCommand):
         end = options.get('end_page')
 
         parsers = {
-            'house_kg': parse_house_kg.delay,
-            'doska': parse_doska.delay,
-            'salexy': parse_salexy.delay
+            'house': parse_house_kg,
+            'doska': parse_doska,
+            'salexy': parse_salexy
         }
 
         if site in parsers:
@@ -24,7 +24,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             '-s',
-            '--sites',
+            '--site',
             type=str,
         )
         parser.add_argument(
